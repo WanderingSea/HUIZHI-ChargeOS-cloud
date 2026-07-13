@@ -1,4 +1,4 @@
-package com.hcp.system.api.domain;
+﻿package com.hcp.system.api.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -182,6 +182,27 @@ public class ChargingOrder extends TenantEntity
 
     /** 停止原因 */
     @Schema(description = "停止原因")
+
+    /** 电表表号 */
+    private String meterNumber;
+
+    /** 电表密文 */
+    private String meterCipher;
+
+    /** 充电开始电表读数 */
+    private BigDecimal meterStartValue;
+
+    /** 充电结束电表读数 */
+    private BigDecimal meterEndValue;
+
+    /** 电动汽车VIN码 */
+    private String vinCode;
+
+    /** 计损总电量 */
+    private BigDecimal lossTotalPower;
+
+    /** 交易标识(桩端上报) */
+    private Integer tradeType;
     private String stopReason;
 
     @Excel(name = "站点名")

@@ -1,4 +1,4 @@
-package com.hcp.system.api.domain;
+﻿package com.hcp.system.api.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -75,6 +75,12 @@ public class ChargingPort extends TenantEntity
     /** 故障码 */
     @Schema(description = "故障码")
     private Long faultCode;
+
+    /** 烟感状态 1=启动/2=空闲/3=报警/4=故障 */
+    private Integer smokeStatus;
+
+    /** 电表示值 */
+    private BigDecimal meterValue;
 
     /** 故障原因 */
     @Excel(name = "故障原因")

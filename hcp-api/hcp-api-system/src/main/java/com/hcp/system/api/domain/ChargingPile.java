@@ -1,4 +1,4 @@
-package com.hcp.system.api.domain;
+﻿package com.hcp.system.api.domain;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -114,7 +114,19 @@ public class ChargingPile extends TenantEntity
     private Integer feeNeedUpdate;
 
     /** 协议版本 */
-    private Long apiVersion;
+    private String apiVersion;
+
+    /** 登录令牌 */
+    private String token;
+
+    /** 设备SIM卡手机号 */
+    private String phoneNumber;
+
+    /** 支持网络制式 */
+    private Integer supportedNetwork;
+
+    /** 当前网络制式 */
+    private Integer currentNetwork;
 
     /** 删除状态 0：未删除，1：删除 */
     private Integer deleted;
