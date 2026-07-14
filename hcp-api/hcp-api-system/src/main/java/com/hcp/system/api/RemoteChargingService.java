@@ -1,4 +1,4 @@
-package com.hcp.system.api;
+﻿package com.hcp.system.api;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -20,6 +20,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.util.List;
+import com.hcp.system.api.domain.dto.FaultReportDTO;
+import com.hcp.system.api.domain.dto.FaultResetDTO;
+import com.hcp.system.api.domain.dto.StartupCompleteDTO;
+import com.hcp.system.api.domain.dto.VinAuthDTO;
+import com.hcp.system.api.domain.dto.PowerControlDTO;
+import com.hcp.system.api.domain.dto.RateDetailDTO;
+import com.hcp.system.api.domain.dto.HourlyEnergyDTO;
+import com.hcp.system.api.domain.dto.OrderRateDetailDTO;
 
 /**
  * 用户服务
@@ -173,4 +181,52 @@ public interface RemoteChargingService {
     R<Page<PlotVO>> getPlotInfoPage(@RequestBody PlotInfoReqVO plotInfoReqVO);
 
 
+
+    /**
+     * 设备故障上报 (V2.0 0x50帧)
+     */
+    @PostMapping("/charge/faultReport")
+    R<String> faultReport(@RequestBody FaultReportDTO dto);
+
+    /**
+     * 设备故障复位上报 (V2.0 0x4B帧)
+     */
+    @PostMapping("/charge/faultReset")
+    R<String> faultReset(@RequestBody FaultResetDTO dto);
+
+    /**
+     * 充电机启动完成报告 (V2.0 0x4F帧)
+     */
+    @PostMapping("/charge/startupComplete")
+    R<String> startupComplete(@RequestBody StartupCompleteDTO dto);
+
+    /**
+     * VIN码鉴权上报 (V2.0 0xA9/0xAA帧)
+     */
+    @PostMapping("/charge/vinAuth")
+    R<String> vinAuth(@RequestBody VinAuthDTO dto);
+
+    /**
+     * 功率控制日志上报 (V2.0 0x60/0x59帧)
+     */
+    @PostMapping("/charge/powerControl")
+    R<String> powerControl(@RequestBody PowerControlDTO dto);
+
+    /**
+     * 动态费率段同步 (V2.0 费率模型)
+     */
+    @PostMapping("/charge/rateDetailSync")
+    R<String> rateDetailSync(@RequestBody List<RateDetailDTO> dtoList);
+
+    /**
+     * 分时电量上报 (V2.0 48个半小时电量)
+     */
+    @PostMapping("/charge/hourlyEnergyReport")
+    R<String> hourlyEnergyReport(@RequestBody HourlyEnergyDTO dto);
+
+    /**
+     * 订单费率明细上报 (V2.0 0x3D帧)
+     */
+    @PostMapping("/charge/orderRateDetail")
+    R<String> orderRateDetail(@RequestBody OrderRateDetailDTO dto);
 }

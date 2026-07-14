@@ -1,4 +1,4 @@
-﻿package com.hcp.system.api.domain.dto;
+package com.hcp.system.api.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

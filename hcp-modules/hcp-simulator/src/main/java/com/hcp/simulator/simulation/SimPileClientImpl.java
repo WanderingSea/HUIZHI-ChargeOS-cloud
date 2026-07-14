@@ -22,6 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import com.hcp.system.api.domain.dto.FaultReportDTO;
+import com.hcp.system.api.domain.dto.FaultResetDTO;
+import com.hcp.system.api.domain.dto.StartupCompleteDTO;
+import com.hcp.system.api.domain.dto.VinAuthDTO;
+import com.hcp.system.api.domain.dto.PowerControlDTO;
+import com.hcp.system.api.domain.dto.HourlyEnergyDTO;
+import com.hcp.system.api.domain.dto.RateDetailDTO;
+import com.hcp.system.api.domain.dto.OrderRateDetailDTO;
 
 @Log4j2
 @Data
@@ -49,7 +57,7 @@ public class SimPileClientImpl implements SimPileIClient {
      */
     private ChargingPile chargingPile;
 
-    long lastRealtime = 0;
+    ConcurrentHashMap<String, Long> lastRealtimeMap = new ConcurrentHashMap<>();
     Map<String, ChargingOrderDTO> chargeOrderItemMap;
     private ChargingOrderService chargingOrderService;
     private RemoteChargingService remoteChargingService;
@@ -189,11 +197,11 @@ public class SimPileClientImpl implements SimPileIClient {
     public void sendRealTimeData(Boolean sendForce, String deviceId) throws BaseException {
         try {
             ChargingOrderDTO chargingOrder = chargingOrderMap.get(deviceId);
-            long minDurant = (chargingOrder == null) ? 60000 : 15000;
-            if ((System.currentTimeMillis() - lastRealtime < minDurant) && !sendForce) {
+            long minDuration = (chargingOrder == null) ? 60000 : 15000;
+            if ((System.currentTimeMillis() - lastRealtimeMap.getOrDefault(deviceId, 0L) < minDuration) && !sendForce) {
                 return;
             }
-            lastRealtime = System.currentTimeMillis();
+            lastRealtimeMap.put(deviceId, System.currentTimeMillis());
             ChargingPort chargingPort = portMap.get(deviceId);
             ChargeInfoDTO chargeInfoDTO = chargeInfoMap.get(chargingPort.getDeviceId());
             if (chargeInfoDTO == null || chargingOrder == null || chargingPort.getGunStatus() == 0 || chargingPort.getGunStatus() == 3) {
@@ -347,5 +355,156 @@ public class SimPileClientImpl implements SimPileIClient {
 
     public Long getPortIdByDeviceId(String deviceId){
         return portMap.get(deviceId).getPortId();
+    }
+
+    /**
+     * 模拟发送设备故障报告 (V2.0 0x50帧)
+     */
+    public void sendFaultReport(String deviceId, Integer faultType, Integer faultCode) {
+        try {
+            FaultReportDTO dto = new FaultReportDTO();
+            dto.setPileId(chargingPile.getPileId());
+            ChargingPort port = portMap.get(deviceId);
+            dto.setPortId(port != null ? port.getPortId() : null);
+            dto.setFaultType(faultType);
+            dto.setFaultCode(faultCode);
+            dto.setFaultTime(DateUtil.now());
+            remoteChargingService.faultReport(dto);
+            log.info("【模拟桩{}】发送故障报告 type={} code={}", chargingPile.getPileId(), faultType, faultCode);
+        } catch (Exception e) {
+            log.error("发送故障报告失败: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 模拟发送故障复位 (V2.0 0x4B帧)
+     */
+    public void sendFaultReset(String deviceId, Integer faultCode) {
+        try {
+            FaultResetDTO dto = new FaultResetDTO();
+            dto.setPileId(chargingPile.getPileId());
+            ChargingPort port = portMap.get(deviceId);
+            dto.setPortId(port != null ? port.getPortId() : null);
+            dto.setFaultCode(faultCode);
+            dto.setResetTime(DateUtil.now());
+            remoteChargingService.faultReset(dto);
+            log.info("【模拟桩{}】发送故障复位 code={}", chargingPile.getPileId(), faultCode);
+        } catch (Exception e) {
+            log.error("发送故障复位失败: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 模拟发送启动完成报告 (V2.0 0x4F帧)
+     */
+    public void sendStartupComplete(String deviceId, String orderId) {
+        try {
+            StartupCompleteDTO dto = new StartupCompleteDTO();
+            dto.setPileId(chargingPile.getPileId());
+            ChargingPort port = portMap.get(deviceId);
+            dto.setPortId(port != null ? port.getPortId() : null);
+            dto.setOrderId(orderId);
+            dto.setStartupResult(0);
+            dto.setFailCode(0);
+            dto.setMeterValue(RandomUtil.randomBigDecimal(new BigDecimal("0"), new BigDecimal("10000")));
+            dto.setVinCode("TEST" + RandomUtil.randomNumbers(14));
+            dto.setSoc(RandomUtil.randomBigDecimal(new BigDecimal("20"), new BigDecimal("95")));
+            dto.setBmsStatus(0);
+            dto.setChargerStatus(0);
+            remoteChargingService.startupComplete(dto);
+            log.info("【模拟桩{}】发送启动完成报告 orderId={}", chargingPile.getPileId(), orderId);
+        } catch (Exception e) {
+            log.error("发送启动完成报告失败: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 模拟发送VIN码鉴权 (V2.0 0xA9帧)
+     */
+    public void sendVinAuth(String deviceId) {
+        try {
+            VinAuthDTO dto = new VinAuthDTO();
+            dto.setPileId(chargingPile.getPileId());
+            ChargingPort port = portMap.get(deviceId);
+            dto.setPortId(port != null ? port.getPortId() : null);
+            dto.setVinCode("TEST" + RandomUtil.randomNumbers(14));
+            remoteChargingService.vinAuth(dto);
+            log.info("【模拟桩{}】发送VIN码鉴权 vin={}", chargingPile.getPileId(), dto.getVinCode());
+        } catch (Exception e) {
+            log.error("发送VIN码鉴权失败: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 模拟发送功率控制应答 (V2.0 0x59帧)
+     */
+    public void sendPowerControl(String deviceId, Integer maxPower) {
+        try {
+            PowerControlDTO dto = new PowerControlDTO();
+            dto.setPileId(chargingPile.getPileId());
+            ChargingPort port = portMap.get(deviceId);
+            dto.setPortId(port != null ? port.getPortId() : null);
+            dto.setMaxPower(maxPower);
+            dto.setPriority(1);
+            dto.setLimitMinutes(0);
+            remoteChargingService.powerControl(dto);
+            log.info("【模拟桩{}】发送功率控制 maxPower={}", chargingPile.getPileId(), maxPower);
+        } catch (Exception e) {
+            log.error("发送功率控制失败: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 模拟发送分时电量上报
+     */
+    public void sendHourlyEnergy(String orderId, Integer slotIndex) {
+        try {
+            HourlyEnergyDTO dto = new HourlyEnergyDTO();
+            dto.setOrderId(orderId);
+            dto.setSlotIndex(slotIndex);
+            dto.setEnergy(RandomUtil.randomBigDecimal(new BigDecimal("0"), new BigDecimal("10")));
+            remoteChargingService.hourlyEnergyReport(dto);
+            log.info("【模拟桩{}】发送分时电量 orderId={} slot={}", chargingPile.getPileId(), orderId, slotIndex);
+        } catch (Exception e) {
+            log.error("发送分时电量失败: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 模拟发送动态费率段同步 (V2.0 费率模型)
+     */
+    public void sendRateDetailSync(String deviceId) {
+        try {
+            RateDetailDTO dto = new RateDetailDTO();
+            dto.setRateIndex(RandomUtil.randomInt(1, 48));
+            dto.setElecRate(RandomUtil.randomBigDecimal(new BigDecimal("0.3"), new BigDecimal("1.5")));
+            dto.setServiceRate(RandomUtil.randomBigDecimal(new BigDecimal("0.1"), new BigDecimal("0.8")));
+            dto.setStartTime("00:00:00");
+            dto.setEndTime("23:59:59");
+            java.util.List<RateDetailDTO> dtoList = java.util.Collections.singletonList(dto);
+            remoteChargingService.rateDetailSync(dtoList);
+            log.info("【模拟桩{}】发送动态费率段同步", chargingPile.getPileId());
+        } catch (Exception e) {
+            log.error("发送动态费率段同步失败: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 模拟发送订单费率明细上报 (V2.0 0x3D帧)
+     */
+    public void sendOrderRateDetail(String orderId) {
+        try {
+            OrderRateDetailDTO dto = new OrderRateDetailDTO();
+            dto.setOrderId(orderId);
+            dto.setRateIndex(RandomUtil.randomInt(1, 4));
+            dto.setRatePrice(RandomUtil.randomBigDecimal(new BigDecimal("0.3"), new BigDecimal("1.5")));
+            dto.setEnergy(RandomUtil.randomBigDecimal(new BigDecimal("0.1"), new BigDecimal("20")));
+            dto.setLossEnergy(RandomUtil.randomBigDecimal(new BigDecimal("0"), new BigDecimal("0.5")));
+            dto.setAmount(RandomUtil.randomBigDecimal(new BigDecimal("1"), new BigDecimal("30")));
+            remoteChargingService.orderRateDetail(dto);
+            log.info("【模拟桩{}】发送订单费率明细 orderId={}", chargingPile.getPileId(), orderId);
+        } catch (Exception e) {
+            log.error("发送订单费率明细失败: {}", e.getMessage());
+        }
     }
 }

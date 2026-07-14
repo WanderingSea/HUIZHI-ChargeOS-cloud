@@ -1,4 +1,4 @@
-package com.hcp.simulator.common;
+﻿package com.hcp.simulator.common;
 
 
 import cn.hutool.core.bean.BeanUtil;
@@ -173,5 +173,52 @@ public class SimCenter {
         }
         Long gunStatus = pileClient.stopCharge(deviceId);
         chargingPortService.updateGunStatus(pileId, deviceId, gunStatus,"N");
+    }
+
+    public void sendFaultReport(String pileId, String deviceId, Integer faultType, Integer faultCode) throws BaseException {
+        SimPileClientImpl client = getClient(pileId);
+        client.sendFaultReport(deviceId, faultType, faultCode);
+    }
+
+    public void sendFaultReset(String pileId, String deviceId, Integer faultCode) throws BaseException {
+        SimPileClientImpl client = getClient(pileId);
+        client.sendFaultReset(deviceId, faultCode);
+    }
+
+    public void sendStartupComplete(String pileId, String deviceId, String orderId) throws BaseException {
+        SimPileClientImpl client = getClient(pileId);
+        client.sendStartupComplete(deviceId, orderId);
+    }
+
+    public void sendVinAuth(String pileId, String deviceId) throws BaseException {
+        SimPileClientImpl client = getClient(pileId);
+        client.sendVinAuth(deviceId);
+    }
+
+    public void sendPowerControl(String pileId, String deviceId, Integer maxPower) throws BaseException {
+        SimPileClientImpl client = getClient(pileId);
+        client.sendPowerControl(deviceId, maxPower);
+    }
+
+    public void sendHourlyEnergy(String pileId, String deviceId, String orderId, Integer slotIndex) throws BaseException {
+        SimPileClientImpl client = getClient(pileId);
+        client.sendHourlyEnergy(orderId, slotIndex);
+    }
+
+    private SimPileClientImpl getClient(String pileId) throws BaseException {
+        if (!pileMap.containsKey(pileId)) {
+            throw new BaseException("模拟桩未启动");
+        }
+        return pileMap.get(pileId);
+    }
+
+    public void sendRateDetailSync(String pileId, String deviceId) throws BaseException {
+        SimPileClientImpl client = getClient(pileId);
+        client.sendRateDetailSync(deviceId);
+    }
+
+    public void sendOrderRateDetail(String pileId, String orderId) throws BaseException {
+        SimPileClientImpl client = getClient(pileId);
+        client.sendOrderRateDetail(orderId);
     }
 }

@@ -120,4 +120,115 @@ public class SimController {
         }
     }
 
+
+    @Operation(summary = "模拟故障上报(V2.0)")
+    @GetMapping("/faultReport")
+    public R<String> faultReport(@Parameter(description = "充电桩ID") String pileId,
+                                  @Parameter(description = "设备-端口ID") String deviceId,
+                                  @Parameter(description = "故障类型") Integer faultType,
+                                  @Parameter(description = "故障编码") Integer faultCode) {
+        try {
+            simCenter.sendFaultReport(pileId, deviceId, faultType, faultCode);
+            return R.ok("故障上报模拟成功");
+        } catch (BaseException ex) {
+            log.error("故障上报模拟失败", ex);
+            return R.fail(ex.getDefaultMessage());
+        }
+    }
+
+    @Operation(summary = "模拟故障复位(V2.0)")
+    @GetMapping("/faultReset")
+    public R<String> faultReset(@Parameter(description = "充电桩ID") String pileId,
+                                 @Parameter(description = "设备-端口ID") String deviceId,
+                                 @Parameter(description = "故障编码") Integer faultCode) {
+        try {
+            simCenter.sendFaultReset(pileId, deviceId, faultCode);
+            return R.ok("故障复位模拟成功");
+        } catch (BaseException ex) {
+            log.error("故障复位模拟失败", ex);
+            return R.fail(ex.getDefaultMessage());
+        }
+    }
+
+    @Operation(summary = "模拟启动完成报告(V2.0)")
+    @GetMapping("/startupComplete")
+    public R<String> startupComplete(@Parameter(description = "充电桩ID") String pileId,
+                                      @Parameter(description = "设备-端口ID") String deviceId,
+                                      @Parameter(description = "订单ID") String orderId) {
+        try {
+            simCenter.sendStartupComplete(pileId, deviceId, orderId);
+            return R.ok("启动完成报告模拟成功");
+        } catch (BaseException ex) {
+            log.error("启动完成报告模拟失败", ex);
+            return R.fail(ex.getDefaultMessage());
+        }
+    }
+
+    @Operation(summary = "模拟VIN码鉴权(V2.0)")
+    @GetMapping("/vinAuth")
+    public R<String> vinAuth(@Parameter(description = "充电桩ID") String pileId,
+                              @Parameter(description = "设备-端口ID") String deviceId) {
+        try {
+            simCenter.sendVinAuth(pileId, deviceId);
+            return R.ok("VIN码鉴权模拟成功");
+        } catch (BaseException ex) {
+            log.error("VIN码鉴权模拟失败", ex);
+            return R.fail(ex.getDefaultMessage());
+        }
+    }
+
+    @Operation(summary = "模拟功率控制(V2.0)")
+    @GetMapping("/powerControl")
+    public R<String> powerControl(@Parameter(description = "充电桩ID") String pileId,
+                                   @Parameter(description = "设备-端口ID") String deviceId,
+                                   @Parameter(description = "最大功率") Integer maxPower) {
+        try {
+            simCenter.sendPowerControl(pileId, deviceId, maxPower);
+            return R.ok("功率控制模拟成功");
+        } catch (BaseException ex) {
+            log.error("功率控制模拟失败", ex);
+            return R.fail(ex.getDefaultMessage());
+        }
+    }
+
+    @Operation(summary = "模拟分时电量上报(V2.0)")
+    @GetMapping("/hourlyEnergy")
+    public R<String> hourlyEnergy(@Parameter(description = "充电桩ID") String pileId,
+                                   @Parameter(description = "设备-端口ID") String deviceId,
+                                   @Parameter(description = "订单ID") String orderId,
+                                   @Parameter(description = "时段序号(0~47)") Integer slotIndex) {
+        try {
+            simCenter.sendHourlyEnergy(pileId, deviceId, orderId, slotIndex);
+            return R.ok("分时电量上报模拟成功");
+        } catch (BaseException ex) {
+            log.error("分时电量上报模拟失败", ex);
+            return R.fail(ex.getDefaultMessage());
+        }
+    }
+
+    @Operation(summary = "模拟动态费率段同步(V2.0)")
+    @GetMapping("/rateDetailSync")
+    public R<String> rateDetailSync(@Parameter(description = "充电桩ID") String pileId,
+                                     @Parameter(description = "设备-端口ID") String deviceId) {
+        try {
+            simCenter.sendRateDetailSync(pileId, deviceId);
+            return R.ok("费率段同步模拟成功");
+        } catch (BaseException ex) {
+            log.error("费率段同步模拟失败", ex);
+            return R.fail(ex.getDefaultMessage());
+        }
+    }
+
+    @Operation(summary = "模拟订单费率明细上报(V2.0)")
+    @GetMapping("/orderRateDetail")
+    public R<String> orderRateDetail(@Parameter(description = "充电桩ID") String pileId,
+                                      @Parameter(description = "订单ID") String orderId) {
+        try {
+            simCenter.sendOrderRateDetail(pileId, orderId);
+            return R.ok("订单费率明细上报模拟成功");
+        } catch (BaseException ex) {
+            log.error("订单费率明细上报模拟失败", ex);
+            return R.fail(ex.getDefaultMessage());
+        }
+    }
 }

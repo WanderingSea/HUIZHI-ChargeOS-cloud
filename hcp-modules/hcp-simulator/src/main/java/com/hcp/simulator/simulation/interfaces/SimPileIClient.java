@@ -62,4 +62,28 @@ public interface SimPileIClient {
      */
     Long getPortIdByDeviceId(String deviceId);
 
+
+    /** (V2.0 0x50帧) 模拟设备故障报告 */
+    void sendFaultReport(String deviceId, Integer faultType, Integer faultCode) throws BaseException;
+
+    /** (V2.0 0x4B帧) 模拟故障复位 */
+    void sendFaultReset(String deviceId, Integer faultCode) throws BaseException;
+
+    /** (V2.0 0x4F帧) 模拟启动完成报告 */
+    void sendStartupComplete(String deviceId, String orderId) throws BaseException;
+
+    /** (V2.0 0xA9帧) 模拟VIN码鉴权 */
+    void sendVinAuth(String deviceId) throws BaseException;
+
+    /** (V2.0 0x59帧) 模拟功率控制应答 */
+    void sendPowerControl(String deviceId, Integer maxPower) throws BaseException;
+
+    /** (V2.0 分时电量) 模拟分时电量上报 */
+    void sendHourlyEnergy(String orderId, Integer slotIndex) throws BaseException;
+
+    /** (V2.0 费率模型) 模拟动态费率段同步 */
+    void sendRateDetailSync(String deviceId) throws BaseException;
+
+    /** (V2.0 0x3D帧) 模拟订单费率明细上报 */
+    void sendOrderRateDetail(String orderId) throws BaseException;
 }

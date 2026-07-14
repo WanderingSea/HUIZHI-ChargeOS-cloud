@@ -1,4 +1,4 @@
-package com.hcp.system.api.factory;
+﻿package com.hcp.system.api.factory;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hcp.common.core.domain.R;
@@ -14,6 +14,14 @@ import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.List;
+import com.hcp.system.api.domain.dto.FaultReportDTO;
+import com.hcp.system.api.domain.dto.FaultResetDTO;
+import com.hcp.system.api.domain.dto.StartupCompleteDTO;
+import com.hcp.system.api.domain.dto.VinAuthDTO;
+import com.hcp.system.api.domain.dto.PowerControlDTO;
+import com.hcp.system.api.domain.dto.RateDetailDTO;
+import com.hcp.system.api.domain.dto.HourlyEnergyDTO;
+import com.hcp.system.api.domain.dto.OrderRateDetailDTO;
 
 @Component
 public class RemoteChargingFallbackFactory implements FallbackFactory<RemoteChargingService> {
@@ -91,6 +99,46 @@ public class RemoteChargingFallbackFactory implements FallbackFactory<RemoteChar
             @Override
             public R<Page<PlotVO>> getPlotInfoPage(PlotInfoReqVO plotInfoReqVO) {
                 return R.fail("getPlotInfoPage失败" + cause.getMessage());
+            }
+
+            @Override
+            public R<String> faultReport(FaultReportDTO dto) {
+                return R.fail("故障上报处理失败" + cause.getMessage());
+            }
+
+            @Override
+            public R<String> faultReset(FaultResetDTO dto) {
+                return R.fail("故障复位处理失败" + cause.getMessage());
+            }
+
+            @Override
+            public R<String> startupComplete(StartupCompleteDTO dto) {
+                return R.fail("启动完成报告处理失败" + cause.getMessage());
+            }
+
+            @Override
+            public R<String> vinAuth(VinAuthDTO dto) {
+                return R.fail("VIN码鉴权处理失败" + cause.getMessage());
+            }
+
+            @Override
+            public R<String> powerControl(PowerControlDTO dto) {
+                return R.fail("功率控制处理失败" + cause.getMessage());
+            }
+
+            @Override
+            public R<String> rateDetailSync(List<RateDetailDTO> dtoList) {
+                return R.fail("费率段同步处理失败" + cause.getMessage());
+            }
+
+            @Override
+            public R<String> hourlyEnergyReport(HourlyEnergyDTO dto) {
+                return R.fail("分时电量上报处理失败" + cause.getMessage());
+            }
+
+            @Override
+            public R<String> orderRateDetail(OrderRateDetailDTO dto) {
+                return R.fail("订单费率明细处理失败" + cause.getMessage());
             }
         };
     }

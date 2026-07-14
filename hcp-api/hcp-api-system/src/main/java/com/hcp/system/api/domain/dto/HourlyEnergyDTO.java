@@ -1,4 +1,4 @@
-﻿package com.hcp.system.api.domain.dto;
+package com.hcp.system.api.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +13,9 @@ import java.math.BigDecimal;
 public class HourlyEnergyDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    private String orderId;
+
     private Integer slotIndex;
+
     private BigDecimal energy;
 }
