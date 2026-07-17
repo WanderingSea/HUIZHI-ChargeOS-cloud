@@ -22,8 +22,8 @@ import lombok.Data;
 @Data
 @TableName("c_charging_order")
 @Schema(description = "充电订单")
-public class ChargingOrder extends TenantEntity
-{
+public class ChargingOrder extends TenantEntity {
+
     private static final long serialVersionUID = 1L;
 
     /** 订单id */
@@ -91,6 +91,7 @@ public class ChargingOrder extends TenantEntity
     private String chargingCdgl;
 
     /** 自定义价格 */
+    @Schema(description = "自定义价格")
     private String customPriceId;
 
     /** 充电时长，用户选择充电时间 */
@@ -106,6 +107,7 @@ public class ChargingOrder extends TenantEntity
     private String mobile;
 
     /** $column.columnComment */
+    @Schema(description = "自定义价格")
     private String code;
 
     /** 卡号(卡支付时插入) */
@@ -175,35 +177,45 @@ public class ChargingOrder extends TenantEntity
     private String groupCardNo;
 
     /** 发票主键 */
+    @Schema(description = "发票主键")
     private Long invoiceId;
 
     /** 发票号 */
+    @Schema(description = "发票号")
     private String invoiceNo;
 
     /** 停止原因 */
     @Schema(description = "停止原因")
+    private String stopReason;
 
     /** 电表表号 */
+    @Schema(description = "电表表号(6字节BCD)")
     private String meterNumber;
 
     /** 电表密文 */
+    @Schema(description = "电表密文")
     private String meterCipher;
 
     /** 充电开始电表读数 */
+    @Schema(description = "充电开始电表读数")
     private BigDecimal meterStartValue;
 
     /** 充电结束电表读数 */
+    @Schema(description = "充电结束电表读数")
     private BigDecimal meterEndValue;
 
     /** 电动汽车VIN码 */
+    @Schema(description = "电动汽车VIN码")
     private String vinCode;
 
     /** 计损总电量 */
+    @Schema(description = "计损总电量")
     private BigDecimal lossTotalPower;
 
     /** 交易标识(桩端上报) */
+    @Schema(description = "交易标识(桩端上报)：1=app/2=卡/3=离线卡/5=VIN码启动")
     private Integer tradeType;
-    private String stopReason;
+
 
     @Excel(name = "站点名")
     @TableField(exist = false)

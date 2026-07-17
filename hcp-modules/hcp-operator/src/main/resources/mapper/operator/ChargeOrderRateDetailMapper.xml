@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hcp.operator.mapper.ChargeOrderRateDetailMapper">
+
+    <resultMap id="BaseResultMap" type="com.hcp.operator.domain.ChargeOrderRateDetail">
+        <result property="id"         column="id"/>
+        <result property="orderId"    column="order_id"/>
+        <result property="rateIndex"  column="rate_index"/>
+        <result property="ratePrice"  column="rate_price"/>
+        <result property="energy"     column="energy"/>
+        <result property="lossEnergy" column="loss_energy"/>
+        <result property="amount"     column="amount"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectVo">
+        select id, order_id, rate_index, rate_price, energy,
+        loss_energy, amount, create_time
+        from c_charge_order_rate_detail
+    </sql>
+    
+    <!--
+    根据订单号查询费率明细
+    -->
+    <select id="selectByOrderId" resultMap="BaseResultMap">
+        <include refid="selectVo"/>
+        where order_id = #{orderId}
+        order by rate_index asc
+    </select>
+
+</mapper>

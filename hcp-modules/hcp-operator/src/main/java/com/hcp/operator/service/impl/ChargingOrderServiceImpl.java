@@ -81,6 +81,7 @@ public class ChargingOrderServiceImpl implements IChargingOrderService
     {
         return chargingOrderMapper.selectById(orderId);
     }
+
     @Override
     public AjaxResult selectChargingOrderByOrderNumber(String orderNumber)
     {
@@ -110,6 +111,7 @@ public class ChargingOrderServiceImpl implements IChargingOrderService
                 ,Convert.toLong(ServletUtils.getParameterToInt(MybatisPageConstants.PAGE_SIZE),10L));
         return chargingOrderMapper.selectChargingOrderListPage(mpPage,chargingOrder);
     }
+
     /**
      * 查询充电订单列表
      *
@@ -128,7 +130,6 @@ public class ChargingOrderServiceImpl implements IChargingOrderService
      * @param chargingOrder 充电订单
      * @return 结果
      */
-
     @Override
     public int insertChargingOrder(ChargingOrder chargingOrder)
     {
