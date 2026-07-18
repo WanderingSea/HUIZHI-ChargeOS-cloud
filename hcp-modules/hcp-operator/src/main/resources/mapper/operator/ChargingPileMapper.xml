@@ -32,6 +32,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="maxPower"    column="max_power"    />
         <result property="feeNeedUpdate"    column="fee_need_update"    />
         <result property="apiVersion"    column="api_version"    />
+        <result property="token"    column="token"    />
+        <result property="phoneNumber"    column="phone_number"    />
+        <result property="supportedNetwork"    column="supported_network"    />
+        <result property="currentNetwork"    column="current_network"    />
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
         <result property="deleted"    column="deleted"    />
@@ -41,7 +45,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectChargingPileVo">
-        select pile_id, name, cp_fee_type, sim_card, sim_due_time, equip_temperature, equip_cpu_temperature, lat, lng, address, img_url, running_status, offline_time, user_id, last_use_time, station_id, wx_rule_id, card_rule_id, create_time, device_type, pile_type, pile_status, electricity, voltage, max_power, fee_need_update, api_version, update_time, remark, deleted, is_hlht, hlht_id, tenant_id from c_charging_pile
+        select pile_id, name, cp_fee_type, sim_card, sim_due_time, equip_temperature, equip_cpu_temperature, lat, lng, address, img_url, running_status, offline_time, user_id, last_use_time, station_id, wx_rule_id, card_rule_id, create_time, device_type, pile_type, pile_status, electricity, voltage, max_power, fee_need_update, api_version, token, phone_number, supported_network, current_network, update_time, remark, deleted, is_hlht, hlht_id, tenant_id from c_charging_pile
     </sql>
 
     <select id="selectChargingPileList"   resultMap="ChargingPileResult">
@@ -334,7 +338,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ,station_id,wx_rule_id,card_rule_id
         ,create_time,device_type,pile_type
         ,pile_status,electricity,voltage
-        ,max_power,fee_need_update,api_version
+        ,max_power,fee_need_update,api_version,token,phone_number,supported_network,current_network
         ,update_time,remark,deleted
         ,is_hlht,hlht_id,tenant_id
         ,create_by,update_by)
@@ -346,7 +350,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                ,#{stationId,jdbcType=BIGINT},#{wxRuleId,jdbcType=INTEGER},#{cardRuleId,jdbcType=INTEGER}
                ,#{createTime,jdbcType=TIMESTAMP},#{deviceType,jdbcType=INTEGER},#{pileType,jdbcType=INTEGER}
                ,#{pileStatus,jdbcType=TINYINT},#{electricity,jdbcType=VARCHAR},#{voltage,jdbcType=VARCHAR}
-               ,#{maxPower,jdbcType=INTEGER},#{feeNeedUpdate,jdbcType=TINYINT},#{apiVersion,jdbcType=INTEGER}
+               ,#{maxPower,jdbcType=INTEGER},#{feeNeedUpdate,jdbcType=TINYINT},#{apiVersion,jdbcType=INTEGER},#{token,jdbcType=VARCHAR},#{phoneNumber,jdbcType=VARCHAR},#{supportedNetwork,jdbcType=TINYINT},#{currentNetwork,jdbcType=TINYINT}
                ,#{updateTime,jdbcType=TIMESTAMP},#{remark,jdbcType=VARCHAR},#{deleted,jdbcType=TINYINT}
                ,#{isHlht,jdbcType=INTEGER},#{hlhtId,jdbcType=VARCHAR},#{tenantId,jdbcType=BIGINT}
                ,#{createBy,jdbcType=VARCHAR},#{updateBy,jdbcType=VARCHAR})
@@ -381,6 +385,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="maxPower != null">max_power,</if>
             <if test="feeNeedUpdate != null">fee_need_update,</if>
             <if test="apiVersion != null">api_version,</if>
+            <if test="token != null">token,</if>
+            <if test="phoneNumber != null">phone_number,</if>
+            <if test="supportedNetwork != null">supported_network,</if>
+            <if test="currentNetwork != null">current_network,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
             <if test="deleted != null">deleted,</if>
@@ -418,6 +426,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="maxPower != null">#{maxPower,jdbcType=INTEGER},</if>
             <if test="feeNeedUpdate != null">#{feeNeedUpdate,jdbcType=TINYINT},</if>
             <if test="apiVersion != null">#{apiVersion,jdbcType=INTEGER},</if>
+            <if test="token != null">#{token,jdbcType=VARCHAR},</if>
+            <if test="phoneNumber != null">#{phoneNumber,jdbcType=VARCHAR},</if>
+            <if test="supportedNetwork != null">#{supportedNetwork,jdbcType=TINYINT},</if>
+            <if test="currentNetwork != null">#{currentNetwork,jdbcType=TINYINT},</if>
             <if test="updateTime != null">#{updateTime,jdbcType=TIMESTAMP},</if>
             <if test="remark != null">#{remark,jdbcType=VARCHAR},</if>
             <if test="deleted != null">#{deleted,jdbcType=TINYINT},</if>
@@ -509,6 +521,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="apiVersion != null">
                 api_version = #{apiVersion,jdbcType=INTEGER},
             </if>
+            <if test="token != null">
+                token = #{token,jdbcType=VARCHAR},
+            </if>
+            <if test="phoneNumber != null">
+                phone_number = #{phoneNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="supportedNetwork != null">
+                supported_network = #{supportedNetwork,jdbcType=TINYINT},
+            </if>
+            <if test="currentNetwork != null">
+                current_network = #{currentNetwork,jdbcType=TINYINT},
+            </if>
             <if test="updateTime != null">
                 update_time = #{updateTime,jdbcType=TIMESTAMP},
             </if>
@@ -565,6 +589,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             max_power =  #{maxPower,jdbcType=INTEGER},
             fee_need_update =  #{feeNeedUpdate,jdbcType=TINYINT},
             api_version =  #{apiVersion,jdbcType=INTEGER},
+            token =  #{token,jdbcType=VARCHAR},
+            phone_number =  #{phoneNumber,jdbcType=VARCHAR},
+            supported_network =  #{supportedNetwork,jdbcType=TINYINT},
+            current_network =  #{currentNetwork,jdbcType=TINYINT},
             update_time =  #{updateTime,jdbcType=TIMESTAMP},
             remark =  #{remark,jdbcType=VARCHAR},
             deleted =  #{deleted,jdbcType=TINYINT},

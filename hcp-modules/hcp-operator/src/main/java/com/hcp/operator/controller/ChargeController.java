@@ -6,12 +6,21 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hcp.common.core.domain.R;
 import com.hcp.common.core.web.controller.BaseController;
 import com.hcp.common.core.web.domain.AjaxResult;
+import com.hcp.operator.domain.ChargeStartupLog;
+import com.hcp.operator.domain.DeviceFault;
+import com.hcp.operator.domain.PowerControlLog;
+import com.hcp.operator.domain.VinAuthLog;
 import com.hcp.operator.service.*;
 import com.hcp.system.api.domain.Bo.FeeRangeTime;
 import com.hcp.system.api.domain.ChargingOrder;
 import com.hcp.system.api.domain.ChargingPile;
 import com.hcp.system.api.domain.ChargingPort;
 import com.hcp.system.api.domain.Heartbeat;
+import com.hcp.system.api.domain.dto.FaultReportDTO;
+import com.hcp.system.api.domain.dto.FaultResetDTO;
+import com.hcp.system.api.domain.dto.PowerControlDTO;
+import com.hcp.system.api.domain.dto.StartupCompleteDTO;
+import com.hcp.system.api.domain.dto.VinAuthDTO;
 import com.hcp.system.api.domain.vo.ChargingPileVO;
 import com.hcp.system.api.domain.vo.PlotDetailVo;
 import com.hcp.system.api.domain.vo.PlotInfoReqVO;
@@ -22,6 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -38,6 +49,14 @@ public class ChargeController extends BaseController {
     private IChargingPortService chargingPortService;
     @Autowired
     private IChargingOrderService chargingOrderService;
+    @Autowired
+    private IDeviceFaultService deviceFaultService;
+    @Autowired
+    private IChargeStartupLogService chargeStartupLogService;
+    @Autowired
+    private IVinAuthLogService vinAuthLogService;
+    @Autowired
+    private IPowerControlLogService powerControlLogService;
 
     //处理设备心跳
     @GetMapping("/heartBeat")
@@ -56,7 +75,7 @@ public class ChargeController extends BaseController {
     }
 
     /**
-     * 注册设备，查询设备是否在平台上
+     * 注册设备，查询设备是否在平台中
      *
      * @param pileId 桩Id
      * @return 结果
@@ -235,6 +254,118 @@ public class ChargeController extends BaseController {
         Page<PlotVO> plotInfo = chargingPileService.getPlotInfoPage(plotInfoReqVO);
 
         return R.ok(plotInfo);
+    }
+
+    /**
+     * 设备故障上报 (V2.0 0x50帧)
+     */
+    @PostMapping("/faultReport")
+    R<String> faultReport(@RequestBody FaultReportDTO dto) {
+        try {
+            DeviceFault fault = new DeviceFault();
+            fault.setPileId(dto.getPileId());
+            fault.setPortId(dto.getPortId());
+            fault.setFaultType(dto.getFaultType());
+            fault.setFaultCode(dto.getFaultCode());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            fault.setFaultTime(sdf.parse(dto.getFaultTime()));
+            deviceFaultService.save(fault);
+            return R.ok();
+        } catch (Exception e) {
+            log.error("设备故障上报失败", e);
+            return R.fail(e.getMessage());
+        }
+    }
+
+    /**
+     * 设备故障复位上报 (V2.0 0x4B帧)
+     */
+    @PostMapping("/faultReset")
+    R<String> faultReset(@RequestBody FaultResetDTO dto) {
+        try {
+            List<DeviceFault> faults = deviceFaultService.getListByPileId(dto.getPileId());
+            DeviceFault target = null;
+            for (DeviceFault f : faults) {
+                if (f.getFaultCode().equals(dto.getFaultCode())) {
+                    target = f;
+                    break;
+                }
+            }
+            if (target == null) {
+                return R.fail("未找到对应故障记录");
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            deviceFaultService.reset(target.getId(), sdf.parse(dto.getResetTime()));
+            return R.ok();
+        } catch (Exception e) {
+            log.error("设备故障复位失败", e);
+            return R.fail(e.getMessage());
+        }
+    }
+
+    /**
+     * 充电机启动完成报告 (V2.0 0x4F帧)
+     */
+    @PostMapping("/startupComplete")
+    R<String> startupComplete(@RequestBody StartupCompleteDTO dto) {
+        try {
+            ChargeStartupLog log = new ChargeStartupLog();
+            log.setPileId(dto.getPileId());
+            log.setPortId(dto.getPortId());
+            log.setOrderId(dto.getOrderId());
+            log.setStartupResult(dto.getStartupResult());
+            log.setFailCode(dto.getFailCode());
+            log.setMeterValue(dto.getMeterValue());
+            log.setVinCode(dto.getVinCode());
+            log.setSoc(dto.getSoc());
+            log.setBmsStatus(dto.getBmsStatus());
+            log.setChargerStatus(dto.getChargerStatus());
+            chargeStartupLogService.save(log);
+            return R.ok();
+        } catch (Exception e) {
+            log.error("充电机启动完成报告失败", e);
+            return R.fail(e.getMessage());
+        }
+    }
+
+    /**
+     * VIN码鉴权上报 (V2.0 0xA9/0xAA帧)
+     */
+    @PostMapping("/vinAuth")
+    R<String> vinAuth(@RequestBody VinAuthDTO dto) {
+        try {
+            VinAuthLog log = new VinAuthLog();
+            log.setPileId(dto.getPileId());
+            log.setPortId(dto.getPortId());
+            log.setVinCode(dto.getVinCode());
+            log.setAuthResult(dto.getAuthResult());
+            log.setOrderId(dto.getOrderId());
+            vinAuthLogService.save(log);
+            return R.ok();
+        } catch (Exception e) {
+            log.error("VIN码鉴权上报失败", e);
+            return R.fail(e.getMessage());
+        }
+    }
+
+    /**
+     * 功率控制日志上报 (V2.0 0x60/0x59帧)
+     */
+    @PostMapping("/powerControl")
+    R<String> powerControl(@RequestBody PowerControlDTO dto) {
+        try {
+            PowerControlLog log = new PowerControlLog();
+            log.setPileId(dto.getPileId());
+            log.setPortId(dto.getPortId());
+            log.setMaxPower(dto.getMaxPower());
+            log.setPriority(dto.getPriority());
+            log.setLimitMinutes(dto.getLimitMinutes());
+            powerControlLogService.save(log);
+            return R.ok();
+        } catch (Exception e) {
+            log.error("功率控制日志上报失败", e);
+            return R.fail(e.getMessage());
+        }
     }
 
 }
