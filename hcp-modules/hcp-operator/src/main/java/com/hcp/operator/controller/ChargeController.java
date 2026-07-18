@@ -18,6 +18,7 @@ import com.hcp.system.api.domain.ChargingPile;
 import com.hcp.system.api.domain.ChargingPort;
 import com.hcp.system.api.domain.Heartbeat;
 import com.hcp.system.api.domain.dto.HourlyEnergyDTO;
+import com.hcp.system.api.domain.dto.OrderRateDetailDTO;
 import com.hcp.system.api.domain.dto.RateDetailDTO;
 import com.hcp.system.api.domain.vo.ChargingPileVO;
 import com.hcp.system.api.domain.vo.PlotDetailVo;
@@ -287,7 +288,7 @@ public class ChargeController extends BaseController {
      */
     @PostMapping("/orderRateDetail")
     @ApiOperation("接收订单费率明细")
-    public R<String> orderRateDetail(@RequestBody RateDetailDTO dto) {
+    public R<String> orderRateDetail(@RequestBody OrderRateDetailDTO dto) {
         ChargeOrderRateDetail detail = new ChargeOrderRateDetail();
         BeanUtil.copyProperties(dto, detail);
         chargeOrderRateDetailService.saveOrderRateDetail(detail);
@@ -308,5 +309,33 @@ public class ChargeController extends BaseController {
         chargeOrderHourlyEnergyService.saveHourlyEnergy(energy);
         return R.ok("订单分时电量数据上报成功");
     }
+
+    /**
+     * V2.0 订单结算
+     */
+    @PostMapping("/V2OrderSettlement")
+    @ApiOperation("V2.0 订单结算")
+    R<String> v2OrderSettlement(@RequestParam("orderId") String orderId,
+                                @RequestParam("totalPower") Double totalPower,
+                                @RequestParam("startTime") String startTime,
+                                @RequestParam("endTime") String endTime,
+                                @RequestParam("electricFee") BigDecimal electricFee,
+                                @RequestParam("serviceFee") BigDecimal serviceFee,
+                                @RequestParam("totalAmount") BigDecimal totalAmount,
+                                @RequestParam("stopReason") String stopReason,
+                                @RequestParam(name = "meterNumber", required = false) String meterNumber,
+                                @RequestParam(name = "meterCipher", required = false) String meterCipher,
+                                @RequestParam(name = "meterStartValue", required = false) BigDecimal meterStartValue,
+                                @RequestParam(name = "meterEndValue", required = false) BigDecimal meterEndValue,
+                                @RequestParam(name = "vinCode", required = false) String vinCode,
+                                @RequestParam(name = "lossTotalPower", required = false) BigDecimal lossTotalPower,
+                                @RequestParam(name = "tradeType", required = false) Integer tradeType) {
+        chargingOrderService.handleV2OrderSettlement(orderId, totalPower, totalAmount,
+                electricFee, serviceFee, startTime, endTime, stopReason,
+                meterNumber, meterCipher, meterStartValue, meterEndValue,
+                vinCode, lossTotalPower, tradeType);
+        return R.ok("订单结算成功");
+    }
+
 
 }
