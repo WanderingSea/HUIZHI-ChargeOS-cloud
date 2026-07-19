@@ -1,6 +1,5 @@
 package com.hcp.system.api;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hcp.common.core.constant.ServiceNameConstants;
 import com.hcp.common.core.domain.R;
@@ -11,6 +10,7 @@ import com.hcp.system.api.domain.vo.ChargingPileVO;
 import com.hcp.system.api.domain.vo.PlotDetailVo;
 import com.hcp.system.api.domain.vo.PlotInfoReqVO;
 import com.hcp.system.api.domain.vo.PlotVO;
+import com.hcp.system.api.factory.RemoteChargingFallbackFactory;
 import com.hcp.system.api.factory.RemoteMpFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +34,7 @@ import com.hcp.system.api.domain.dto.OrderRateDetailDTO;
  *
  * @author vctgo
  */
-@FeignClient(contextId = "remoteChargeService", value = ServiceNameConstants.OPERATOR_SERVICE, fallbackFactory = RemoteMpFallbackFactory.class)
+@FeignClient(contextId = "remoteChargeService", value = ServiceNameConstants.OPERATOR_SERVICE, fallbackFactory = RemoteChargingFallbackFactory.class)
 public interface RemoteChargingService {
     /**
      * 更新设备心跳
