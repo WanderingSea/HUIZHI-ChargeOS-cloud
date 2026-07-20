@@ -1,6 +1,5 @@
 package com.hcp.simulator.simulation;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.RandomUtil;
@@ -17,8 +16,10 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import com.hcp.system.api.domain.dto.FaultReportDTO;
@@ -252,55 +253,6 @@ public class SimPileClientImpl implements SimPileIClient {
                 remoteChargingService.orderInfo(chargingOrder.getOrderId(), Double.valueOf(chargeInfoDTO.getChargePower()),
                         DateUtil.formatDateTime(chargeInfoDTO.getStartTime()), DateUtil.formatDateTime(chargeInfoDTO.getEndTime()),
                         BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, stopReason);
-
-                // === V2.0 新增：费率段同步 + 订单费率明细 + 分时电量 ===
-                try {
-                    // 1. 费率段同步：构造多段费率（模拟全天费率）
-                    List<RateDetailDTO> rateDetailList = new ArrayList<>();
-                    // 峰时段 08:00-12:00
-                    rateDetailList.add(new RateDetailDTO(1L, 1,
-                            new BigDecimal("1.2"), new BigDecimal("0.6"), "08:00:00", "12:00:00"));
-                    // 平时段 12:00-18:00
-                    rateDetailList.add(new RateDetailDTO(1L, 2,
-                            new BigDecimal("0.8"), new BigDecimal("0.4"), "12:00:00", "18:00:00"));
-                    // 谷时段 18:00-24:00
-                    rateDetailList.add(new RateDetailDTO(1L, 3,
-                            new BigDecimal("0.4"), new BigDecimal("0.2"), "18:00:00", "23:59:59"));
-                    if (CollUtil.isNotEmpty(rateDetailList)) {
-                        remoteChargingService.rateDetailSync(rateDetailList);
-                    }
-
-                    // 2. 订单费率明细：按实际充电时长拆分为多条
-                    double totalPower = chargeInfoDTO.getChargePower();
-                    // 假设充电时长2小时，拆分3段（按整点）
-                    double[] segmentPowers = {totalPower * 0.4, totalPower * 0.35, totalPower * 0.25};
-                    BigDecimal[] segmentPrices = {new BigDecimal("1.8"), new BigDecimal("1.2"), new BigDecimal("0.6")};
-                    for (int i = 0; i < segmentPowers.length; i++) {
-                        OrderRateDetailDTO detailDTO = new OrderRateDetailDTO();
-                        detailDTO.setOrderId(chargingOrder.getOrderId());
-                        detailDTO.setRateIndex(i + 1);
-                        detailDTO.setRatePrice(segmentPrices[i]);
-                        detailDTO.setEnergy(BigDecimal.valueOf(segmentPowers[i]).setScale(4, RoundingMode.HALF_UP));
-                        detailDTO.setLossEnergy(BigDecimal.ZERO);
-                        detailDTO.setAmount(BigDecimal.valueOf(segmentPowers[i])
-                                .multiply(segmentPrices[i]).setScale(4, RoundingMode.HALF_UP));
-                        remoteChargingService.orderRateDetail(detailDTO);
-                    }
-
-                    // 3. 分时电量：按充电起止时间，每半小时上报一条
-                    double powerPerSlot = totalPower / 4; // 假设2小时=4个slot
-                    int startSlot = getSlotIndex(chargeInfoDTO.getStartTime());
-                    for (int i = 0; i < 4; i++) {
-                        HourlyEnergyDTO energyDTO = new HourlyEnergyDTO();
-                        energyDTO.setOrderId(chargingOrder.getOrderId());
-                        energyDTO.setSlotIndex(startSlot + i);
-                        energyDTO.setEnergy(BigDecimal.valueOf(powerPerSlot).setScale(4, RoundingMode.HALF_UP));
-                        remoteChargingService.hourlyEnergyReport(energyDTO);
-                    }
-
-                } catch (Exception e) {
-                    log.error("V2.0结算数据上报失败:{}", e.getMessage());
-                }
             }catch (Exception e){
                 log.error("远程调用发送充电订单信息接口失败:{}", e.getMessage());
             }
@@ -316,16 +268,6 @@ public class SimPileClientImpl implements SimPileIClient {
                 chargingPort.setGunStatus(0L);
             }
         }
-    }
-
-    /**
-     * 获取时间对应的半小时 slot 索引（0~47）
-     * 例如 00:00→0, 00:30→1, 01:00→2, ..., 23:30→47
-     */
-    private int getSlotIndex(Date date) {
-        int hour = DateUtil.hour(date, true);
-        int minute = DateUtil.minute(date);
-        return hour * 2 + (minute >= 30 ? 1 : 0);
     }
 
     public synchronized void startSendRealTime(String deviceId) throws BaseException {
