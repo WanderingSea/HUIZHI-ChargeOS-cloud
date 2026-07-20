@@ -13,7 +13,7 @@ spring:
   cloud:
     nacos:
 #      username: nacos
-#      password: nacos123456
+#      password: nacos
       discovery:
         # 服务注册地址
         server-addr: ${NACOS_HOST:127.0.0.1}:${NACOS_PORT:8848}

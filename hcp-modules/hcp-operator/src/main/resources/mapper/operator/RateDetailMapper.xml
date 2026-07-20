@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hcp.operator.mapper.RateDetailMapper">
+
+    <resultMap type="com.hcp.operator.domain.RateDetail" id="RateDetailResult">
+        <result property="id"          column="id"/>
+        <result property="priceId"     column="price_id"/>
+        <result property="rateIndex"   column="rate_index"/>
+        <result property="elecRate"    column="elec_rate"/>
+        <result property="serviceRate" column="service_rate"/>
+        <result property="startTime"   column="start_time"/>
+        <result property="endTime"     column="end_time"/>
+        <result property="tenantId"    column="tenant_id"/>
+        <result property="createTime"  column="create_time"/>
+    </resultMap>
+
+    <sql id="selectVo">
+        select id, price_id, rate_index, elec_rate, service_rate,
+        start_time, end_time, tenant_id, create_time
+        from c_rate_detail
+    </sql>
+
+
+    <!--
+    根据priceId查询所有费率段（按rate_index排序）
+    -->
+    <select id="selectByPriceId" resultMap="RateDetailResult">
+           <include refid="selectVo"/>
+               where price_id = #{priceId}
+               order by rate_index asc
+    </select>
+
+    <!--
+    删除某个定价规则的所有费率段
+    -->
+    <delete id="deleteByPriceId">
+        delete from c_rate_detail where price_id = #{priceId}
+    </delete>
+
+
+
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hcp.operator.mapper.ChargeOrderHourlyEnergyMapper">
+
+    <resultMap id="BaseResultMap" type="com.hcp.operator.domain.ChargeOrderHourlyEnergy">
+        <result property="id"        column="id"/>
+        <result property="orderId"   column="order_id"/>
+        <result property="slotIndex" column="slot_index"/>
+        <result property="energy"    column="energy"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectVo">
+        select id, order_id, slot_index, energy, create_time
+        from c_charge_order_hourly_energy
+    </sql>
+
+    <!--
+    根据订单号查询订单每小时充电电量明细
+    -->
+    <select id="selectByOrderId" resultMap="BaseResultMap">
+        <include refid="selectVo"/>
+        where order_id = #{orderId}
+        order by slot_index asc
+    </select>
+</mapper>
