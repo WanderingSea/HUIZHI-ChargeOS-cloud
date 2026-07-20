@@ -1,32 +1,45 @@
 package com.hcp.operator.controller;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hcp.common.core.domain.R;
 import com.hcp.common.core.web.controller.BaseController;
 import com.hcp.common.core.web.domain.AjaxResult;
+import com.hcp.operator.domain.ChargeOrderHourlyEnergy;
+import com.hcp.operator.domain.ChargeOrderRateDetail;
+import com.hcp.operator.domain.RateDetail;
 import com.hcp.operator.service.*;
 import com.hcp.system.api.domain.Bo.FeeRangeTime;
 import com.hcp.system.api.domain.ChargingOrder;
 import com.hcp.system.api.domain.ChargingPile;
 import com.hcp.system.api.domain.ChargingPort;
 import com.hcp.system.api.domain.Heartbeat;
+import com.hcp.system.api.domain.dto.HourlyEnergyDTO;
+import com.hcp.system.api.domain.dto.OrderRateDetailDTO;
+import com.hcp.system.api.domain.dto.RateDetailDTO;
 import com.hcp.system.api.domain.vo.ChargingPileVO;
 import com.hcp.system.api.domain.vo.PlotDetailVo;
 import com.hcp.system.api.domain.vo.PlotInfoReqVO;
 import com.hcp.system.api.domain.vo.PlotVO;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.Rate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/charge")
 @Slf4j
+@RequiredArgsConstructor
 public class ChargeController extends BaseController {
     @Autowired
     private IHeartbeatService heartbeatService;
@@ -38,6 +51,10 @@ public class ChargeController extends BaseController {
     private IChargingPortService chargingPortService;
     @Autowired
     private IChargingOrderService chargingOrderService;
+
+    private final IRateDetailService rateDetailService;
+    private final IChargeOrderRateDetailService chargeOrderRateDetailService;
+    private final IChargeOrderHourlyEnergyService chargeOrderHourlyEnergyService;
 
     //处理设备心跳
     @GetMapping("/heartBeat")
@@ -209,6 +226,7 @@ public class ChargeController extends BaseController {
 
         return R.ok(plotInfo);
     }
+
     @GetMapping("/queryChargingPileData")
     @ApiOperation("查询充电桩列表")
     public R<ChargingPileVO> queryChargingPileData(@RequestParam("pileId") String pileId) {
@@ -236,5 +254,88 @@ public class ChargeController extends BaseController {
 
         return R.ok(plotInfo);
     }
+
+
+    /**
+     * 费率段同步（V2.0）<br>
+     * 桩端/管理端上报该桩的费率模板，写入c_rate_detail表
+     */
+    @PostMapping("/rateDetailSync")
+    @ApiOperation("接收桩同步的费率模板")
+    public R<String> rateDetailSync(@RequestParam("priceId") Long priceId,
+                             @RequestBody List<RateDetailDTO> dtoList) {
+        // 参数校验
+        if (priceId == null) {
+            return R.fail("定价规则ID不能为空");
+        }
+        // 参数校验
+        if (CollUtil.isEmpty(dtoList)) {
+            return R.fail("费率数据不能为空");
+        }
+        // DTO转实体类
+        List<RateDetail> details = BeanUtil.copyToList(dtoList, RateDetail.class);
+
+        // 设置priceId到每个实体（确保数据完整性）
+        details.forEach(detail -> detail.setPriceId(priceId));
+
+        rateDetailService.saveRateDetails(priceId,details);
+        return R.ok("费率同步成功");
+    }
+
+    /**
+     * 订单费率明细上报（V2.0）<br>
+     * 充电结束后，接收桩端上送的订单费率明细
+     */
+    @PostMapping("/orderRateDetail")
+    @ApiOperation("接收订单费率明细")
+    public R<String> orderRateDetail(@RequestBody OrderRateDetailDTO dto) {
+        ChargeOrderRateDetail detail = new ChargeOrderRateDetail();
+        BeanUtil.copyProperties(dto, detail);
+        chargeOrderRateDetailService.saveOrderRateDetail(detail);
+        return R.ok("订单费率明细上报成功");
+    }
+
+    /**
+     * 分时电量上报（V2.0）<br>
+     * 充电结束后，接收桩端上送的分时电量数据
+     */
+    @PostMapping("/hourlyEnergy")
+    @ApiOperation("接收订单分时电量数据")
+    R<String> hourlyEnergy(@RequestBody HourlyEnergyDTO dto,
+                           @RequestParam("orderId") String orderId){
+        ChargeOrderHourlyEnergy energy = new ChargeOrderHourlyEnergy();
+        BeanUtil.copyProperties(dto, energy);
+        energy.setOrderId(orderId);
+        chargeOrderHourlyEnergyService.saveHourlyEnergy(energy);
+        return R.ok("订单分时电量数据上报成功");
+    }
+
+    /**
+     * V2.0 订单结算
+     */
+    @PostMapping("/V2OrderSettlement")
+    @ApiOperation("V2.0 订单结算")
+    R<String> v2OrderSettlement(@RequestParam("orderId") String orderId,
+                                @RequestParam("totalPower") Double totalPower,
+                                @RequestParam("startTime") String startTime,
+                                @RequestParam("endTime") String endTime,
+                                @RequestParam("electricFee") BigDecimal electricFee,
+                                @RequestParam("serviceFee") BigDecimal serviceFee,
+                                @RequestParam("totalAmount") BigDecimal totalAmount,
+                                @RequestParam("stopReason") String stopReason,
+                                @RequestParam(name = "meterNumber", required = false) String meterNumber,
+                                @RequestParam(name = "meterCipher", required = false) String meterCipher,
+                                @RequestParam(name = "meterStartValue", required = false) BigDecimal meterStartValue,
+                                @RequestParam(name = "meterEndValue", required = false) BigDecimal meterEndValue,
+                                @RequestParam(name = "vinCode", required = false) String vinCode,
+                                @RequestParam(name = "lossTotalPower", required = false) BigDecimal lossTotalPower,
+                                @RequestParam(name = "tradeType", required = false) Integer tradeType) {
+        chargingOrderService.handleV2OrderSettlement(orderId, totalPower, totalAmount,
+                electricFee, serviceFee, startTime, endTime, stopReason,
+                meterNumber, meterCipher, meterStartValue, meterEndValue,
+                vinCode, lossTotalPower, tradeType);
+        return R.ok("订单结算成功");
+    }
+
 
 }

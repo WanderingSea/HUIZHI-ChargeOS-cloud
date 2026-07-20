@@ -206,8 +206,6 @@ public class SimController {
         }
     }
 
-    // ========== V2.0 测试触发端点 ==========
-
     @Operation(summary = "模拟动态费率段同步(V2.0)")
     @GetMapping("/rateDetailSync")
     public R<String> rateDetailSync(@Parameter(description = "充电桩ID") String pileId,
@@ -233,7 +231,4 @@ public class SimController {
             return R.fail(ex.getDefaultMessage());
         }
     }
-
-
-
 }
