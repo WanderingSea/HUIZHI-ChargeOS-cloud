@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hcp.operator.domain.PowerControlLog;
 import com.hcp.operator.mapper.PowerControlLogMapper;
 import com.hcp.operator.service.IPowerControlLogService;
+import com.hcp.system.api.domain.dto.PowerControlDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,5 +46,23 @@ public class PowerControlLogServiceImpl implements IPowerControlLogService
         LambdaQueryWrapper<PowerControlLog> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PowerControlLog::getPileId, pileId);
         return powerControlLogMapper.selectList(wrapper);
+    }
+
+    /**
+     * 功率控制日志上报（V2.0）
+     *
+     * @param dto 功率控制DTO
+     */
+    @Override
+    public void savePowerControl(PowerControlDTO dto)
+    {
+        PowerControlLog log = new PowerControlLog();
+        log.setPileId(dto.getPileId());
+        log.setPortId(dto.getPortId());
+        log.setMaxPower(dto.getMaxPower());
+        log.setPriority(dto.getPriority());
+        log.setLimitMinutes(dto.getLimitMinutes());
+        log.setResult(0);
+        powerControlLogMapper.insert(log);
     }
 }

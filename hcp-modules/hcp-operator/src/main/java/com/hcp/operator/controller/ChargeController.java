@@ -6,10 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hcp.common.core.domain.R;
 import com.hcp.common.core.web.controller.BaseController;
 import com.hcp.common.core.web.domain.AjaxResult;
-import com.hcp.operator.domain.ChargeStartupLog;
-import com.hcp.operator.domain.DeviceFault;
-import com.hcp.operator.domain.PowerControlLog;
-import com.hcp.operator.domain.VinAuthLog;
 import com.hcp.operator.service.*;
 import com.hcp.system.api.domain.Bo.FeeRangeTime;
 import com.hcp.system.api.domain.ChargingOrder;
@@ -31,8 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -75,7 +69,6 @@ public class ChargeController extends BaseController {
     }
 
     /**
-     * 注册设备，查询设备是否在平台中
      *
      * @param pileId 桩Id
      * @return 结果
@@ -261,20 +254,8 @@ public class ChargeController extends BaseController {
      */
     @PostMapping("/faultReport")
     R<String> faultReport(@RequestBody FaultReportDTO dto) {
-        try {
-            DeviceFault fault = new DeviceFault();
-            fault.setPileId(dto.getPileId());
-            fault.setPortId(dto.getPortId());
-            fault.setFaultType(dto.getFaultType());
-            fault.setFaultCode(dto.getFaultCode());
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            fault.setFaultTime(sdf.parse(dto.getFaultTime()));
-            deviceFaultService.save(fault);
-            return R.ok();
-        } catch (Exception e) {
-            log.error("设备故障上报失败", e);
-            return R.fail(e.getMessage());
-        }
+        deviceFaultService.reportFault(dto);
+        return R.ok();
     }
 
     /**
@@ -282,25 +263,8 @@ public class ChargeController extends BaseController {
      */
     @PostMapping("/faultReset")
     R<String> faultReset(@RequestBody FaultResetDTO dto) {
-        try {
-            List<DeviceFault> faults = deviceFaultService.getListByPileId(dto.getPileId());
-            DeviceFault target = null;
-            for (DeviceFault f : faults) {
-                if (f.getFaultCode().equals(dto.getFaultCode())) {
-                    target = f;
-                    break;
-                }
-            }
-            if (target == null) {
-                return R.fail("未找到对应故障记录");
-            }
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            deviceFaultService.reset(target.getId(), sdf.parse(dto.getResetTime()));
-            return R.ok();
-        } catch (Exception e) {
-            log.error("设备故障复位失败", e);
-            return R.fail(e.getMessage());
-        }
+        deviceFaultService.resetFault(dto);
+        return R.ok();
     }
 
     /**
@@ -308,24 +272,8 @@ public class ChargeController extends BaseController {
      */
     @PostMapping("/startupComplete")
     R<String> startupComplete(@RequestBody StartupCompleteDTO dto) {
-        try {
-            ChargeStartupLog log = new ChargeStartupLog();
-            log.setPileId(dto.getPileId());
-            log.setPortId(dto.getPortId());
-            log.setOrderId(dto.getOrderId());
-            log.setStartupResult(dto.getStartupResult());
-            log.setFailCode(dto.getFailCode());
-            log.setMeterValue(dto.getMeterValue());
-            log.setVinCode(dto.getVinCode());
-            log.setSoc(dto.getSoc());
-            log.setBmsStatus(dto.getBmsStatus());
-            log.setChargerStatus(dto.getChargerStatus());
-            chargeStartupLogService.save(log);
-            return R.ok();
-        } catch (Exception e) {
-            log.error("充电机启动完成报告失败", e);
-            return R.fail(e.getMessage());
-        }
+        chargeStartupLogService.saveStartupComplete(dto);
+        return R.ok();
     }
 
     /**
@@ -333,19 +281,8 @@ public class ChargeController extends BaseController {
      */
     @PostMapping("/vinAuth")
     R<String> vinAuth(@RequestBody VinAuthDTO dto) {
-        try {
-            VinAuthLog log = new VinAuthLog();
-            log.setPileId(dto.getPileId());
-            log.setPortId(dto.getPortId());
-            log.setVinCode(dto.getVinCode());
-            log.setAuthResult(dto.getAuthResult());
-            log.setOrderId(dto.getOrderId());
-            vinAuthLogService.save(log);
-            return R.ok();
-        } catch (Exception e) {
-            log.error("VIN码鉴权上报失败", e);
-            return R.fail(e.getMessage());
-        }
+        vinAuthLogService.saveVinAuth(dto);
+        return R.ok();
     }
 
     /**
@@ -353,19 +290,8 @@ public class ChargeController extends BaseController {
      */
     @PostMapping("/powerControl")
     R<String> powerControl(@RequestBody PowerControlDTO dto) {
-        try {
-            PowerControlLog log = new PowerControlLog();
-            log.setPileId(dto.getPileId());
-            log.setPortId(dto.getPortId());
-            log.setMaxPower(dto.getMaxPower());
-            log.setPriority(dto.getPriority());
-            log.setLimitMinutes(dto.getLimitMinutes());
-            powerControlLogService.save(log);
-            return R.ok();
-        } catch (Exception e) {
-            log.error("功率控制日志上报失败", e);
-            return R.fail(e.getMessage());
-        }
+        powerControlLogService.savePowerControl(dto);
+        return R.ok();
     }
 
 }
