@@ -101,4 +101,14 @@ public interface IChargingOrderService
     void handleChargingHeartBeat(String orderId, Double voltage, Double electric, String soc, Double chargePower, BigDecimal chargeFee, BigDecimal serviceFee, BigDecimal chargePrice);
 
     Page<ChargingOrder> queryOrderList(ChargingOrder chargingOrder);
+
+    /**
+     * V2.0订单结算（包含7个新字段）
+     */
+    void handleV2OrderSettlement(String orderId, Double totalPower, BigDecimal totalAmount,
+                                 BigDecimal electricFee, BigDecimal serviceFee, String startTime, String endTime,
+                                 String stopReason,
+                                 String meterNumber, String meterCipher,
+                                 BigDecimal meterStartValue, BigDecimal meterEndValue,
+                                 String vinCode, BigDecimal lossTotalPower, Integer tradeType);
 }

@@ -301,11 +301,10 @@ public class ChargeController extends BaseController {
      */
     @PostMapping("/hourlyEnergy")
     @ApiOperation("接收订单分时电量数据")
-    R<String> hourlyEnergy(@RequestBody HourlyEnergyDTO dto,
-                           @RequestParam("orderId") String orderId){
+    R<String> hourlyEnergy(@RequestBody HourlyEnergyDTO dto){
         ChargeOrderHourlyEnergy energy = new ChargeOrderHourlyEnergy();
         BeanUtil.copyProperties(dto, energy);
-        energy.setOrderId(orderId);
+        energy.setOrderId(dto.getOrderId());
         chargeOrderHourlyEnergyService.saveHourlyEnergy(energy);
         return R.ok("订单分时电量数据上报成功");
     }

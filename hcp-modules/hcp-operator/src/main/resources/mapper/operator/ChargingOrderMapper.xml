@@ -42,10 +42,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="invoiceNo"    column="invoice_no"    />
         <result property="stopReason"    column="stop_reason"    />
         <result property="tenantId"    column="tenant_id"    />
+        <result property="meterNumber"     column="meter_number"/>
+        <result property="meterCipher"     column="meter_cipher"/>
+        <result property="meterStartValue" column="meter_start_value"/>
+        <result property="meterEndValue"   column="meter_end_value"/>
+        <result property="vinCode"         column="vin_code"/>
+        <result property="lossTotalPower"  column="loss_total_power"/>
+        <result property="tradeType"       column="trade_type"/>
     </resultMap>
 
     <sql id="selectChargingOrderVo">
-        select order_id, user_Id, order_state, pile_id, port_id, start_time, end_time, order_number, charge_status, is_fee, consume_power, charging_current, charging_cdgl, custom_price_id, hour, price, mobile, create_time, code, card_no, ordergold, order_type, out_trade_no, real_hour, real_end_time, refund_amount, device_type, charge_fee, service_fee, pay_time, order_source, is_group_order, group_card_no, invoice_id, invoice_no, stop_reason, tenant_id from c_charging_order
+        select order_id, user_Id, order_state, pile_id, port_id, start_time, end_time, order_number, charge_status,
+        is_fee, consume_power, charging_current, charging_cdgl, custom_price_id, hour, price, mobile, create_time,
+        code, card_no, ordergold, order_type, out_trade_no, real_hour, real_end_time, refund_amount, device_type,
+        charge_fee, service_fee, pay_time, order_source, is_group_order, group_card_no, invoice_id, invoice_no,
+        stop_reason, tenant_id , meter_number, meter_cipher, meter_start_value, meter_end_value,
+        vin_code, loss_total_power, trade_type from c_charging_order
     </sql>
 
     <select id="selectChargingOrderList"   resultMap="ChargingOrderResult">
@@ -236,7 +248,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ,order_source,is_group_order,group_card_no
         ,invoice_id,invoice_no,stop_reason
         ,tenant_id,create_by,update_time
-        ,update_by)
+        ,update_by,meter_number,meter_cipher,meter_start_value,meter_end_value
+        ,vin_code,loss_total_power,trade_type)
         values (#{orderId,jdbcType=VARCHAR},#{userId,jdbcType=BIGINT},#{orderState,jdbcType=VARCHAR}
                ,#{pileId,jdbcType=VARCHAR},#{portId,jdbcType=BIGINT},#{startTime,jdbcType=VARCHAR}
                ,#{endTime,jdbcType=VARCHAR},#{orderNumber,jdbcType=VARCHAR},#{chargeStatus,jdbcType=VARCHAR}
@@ -250,7 +263,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                ,#{orderSource,jdbcType=INTEGER},#{isGroupOrder,jdbcType=INTEGER},#{groupCardNo,jdbcType=VARCHAR}
                ,#{invoiceId,jdbcType=INTEGER},#{invoiceNo,jdbcType=VARCHAR},#{stopReason,jdbcType=VARCHAR}
                ,#{tenantId,jdbcType=BIGINT},#{createBy,jdbcType=VARCHAR},#{updateTime,jdbcType=TIMESTAMP}
-               ,#{updateBy,jdbcType=VARCHAR})
+               ,#{updateBy,jdbcType=VARCHAR},#{meterNumber,jdbcType=VARCHAR},#{meterCipher,jdbcType=VARCHAR},#{meterStartValue,jdbcType=DECIMAL},#{meterEndValue,jdbcType=DECIMAL}
+               ,#{vinCode,jdbcType=VARCHAR},#{lossTotalPower,jdbcType=DECIMAL},#{tradeType,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" keyColumn="order_id" keyProperty="orderId" parameterType="com.hcp.system.api.domain.ChargingOrder" useGeneratedKeys="true">
         insert into c_charging_order
@@ -295,6 +309,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createBy != null">create_by,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="updateBy != null">update_by,</if>
+            <if test="meterNumber != null">meter_number,</if>
+            <if test="meterCipher != null">meter_cipher,</if>
+            <if test="meterStartValue != null">meter_start_value,</if>
+            <if test="meterEndValue != null">meter_end_value,</if>
+            <if test="vinCode != null">vin_code,</if>
+            <if test="lossTotalPower != null">loss_total_power,</if>
+            <if test="tradeType != null">trade_type,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderId != null">#{orderId,jdbcType=VARCHAR},</if>
@@ -337,6 +358,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createBy != null">#{createBy,jdbcType=VARCHAR},</if>
             <if test="updateTime != null">#{updateTime,jdbcType=TIMESTAMP},</if>
             <if test="updateBy != null">#{updateBy,jdbcType=VARCHAR},</if>
+            <if test="meterNumber != null">#{meterNumber,jdbcType=VARCHAR},</if>
+            <if test="meterCipher != null">#{meterCipher,jdbcType=VARCHAR},</if>
+            <if test="meterStartValue != null">#{meterStartValue,jdbcType=DECIMAL},</if>
+            <if test="meterEndValue != null">#{meterEndValue,jdbcType=DECIMAL},</if>
+            <if test="vinCode != null">#{vinCode,jdbcType=VARCHAR},</if>
+            <if test="lossTotalPower != null">#{lossTotalPower,jdbcType=DECIMAL},</if>
+            <if test="tradeType != null">#{tradeType,jdbcType=VARCHAR},</if>
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.hcp.system.api.domain.ChargingOrder">
@@ -459,8 +487,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateBy != null">
                 update_by = #{updateBy,jdbcType=VARCHAR},
             </if>
+            <if test="meterNumber != null">
+                meter_number = #{meterNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="meterCipher != null">
+                meter_cipher = #{meterCipher,jdbcType=VARCHAR},
+            </if>
+            <if test="meterStartValue != null">
+                meter_start_value = #{meterStartValue,jdbcType=DECIMAL},
+            </if>
+            <if test="meterEndValue != null">
+                meter_end_value = #{meterEndValue,jdbcType=DECIMAL},
+            </if>
+            <if test="vinCode != null">
+                vin_code = #{vinCode,jdbcType=VARCHAR},
+            </if>
+            <if test="lossTotalPower != null">
+                loss_total_power = #{lossTotalPower,jdbcType=DECIMAL},
+            </if>
+            <if test="tradeType != null">
+                trade_type = #{tradeType,jdbcType=VARCHAR},
+            </if>
         </set>
-        where   order_id = #{orderId,jdbcType=VARCHAR}
+        where order_id = #{orderId,jdbcType=VARCHAR}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.hcp.system.api.domain.ChargingOrder">
         update c_charging_order
@@ -503,8 +552,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             tenant_id =  #{tenantId,jdbcType=BIGINT},
             create_by =  #{createBy,jdbcType=VARCHAR},
             update_time =  #{updateTime,jdbcType=TIMESTAMP},
-            update_by =  #{updateBy,jdbcType=VARCHAR}
-        where   order_id = #{orderId,jdbcType=VARCHAR}
+            update_by =  #{updateBy,jdbcType=VARCHAR},
+            meter_number = #{meterNumber,jdbcType=VARCHAR},
+            meter_cipher = #{meterCipher,jdbcType=VARCHAR},
+            meter_start_value = #{meterStartValue,jdbcType=DECIMAL},
+            meter_end_value = #{meterEndValue,jdbcType=DECIMAL},
+            vin_code = #{vinCode,jdbcType=VARCHAR},
+            loss_total_power = #{lossTotalPower,jdbcType=DECIMAL},
+            trade_type = #{tradeType,jdbcType=INTEGER}
+        where order_id = #{orderId,jdbcType=VARCHAR}
     </update>
 
 </mapper>

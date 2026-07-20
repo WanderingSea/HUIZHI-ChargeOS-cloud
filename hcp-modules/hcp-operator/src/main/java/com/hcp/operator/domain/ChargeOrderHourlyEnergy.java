@@ -3,6 +3,7 @@ package com.hcp.operator.domain;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.hcp.common.core.annotation.Excel;
+import com.hcp.common.core.web.domain.BaseEntity;
 import com.hcp.common.core.web.domain.TenantEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -20,7 +21,7 @@ import java.math.BigDecimal;
 @Data
 @TableName("c_charge_order_hourly_energy")
 @Schema(description = "订单每小时电量")
-public class ChargeOrderHourlyEnergy extends TenantEntity {
+public class ChargeOrderHourlyEnergy extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 
