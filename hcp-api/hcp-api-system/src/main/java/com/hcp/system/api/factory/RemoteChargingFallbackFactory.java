@@ -1,4 +1,4 @@
-﻿package com.hcp.system.api.factory;
+package com.hcp.system.api.factory;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hcp.common.core.domain.R;

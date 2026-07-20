@@ -1,4 +1,4 @@
-﻿package com.hcp.system.api;
+package com.hcp.system.api;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hcp.common.core.constant.ServiceNameConstants;
