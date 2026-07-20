@@ -26,19 +26,16 @@ import com.hcp.system.api.domain.vo.PlotVO;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.Rate;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/charge")
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class ChargeController extends BaseController {
     @Autowired
     private IHeartbeatService heartbeatService;
@@ -276,7 +273,6 @@ public class ChargeController extends BaseController {
 
         // 设置priceId到每个实体（确保数据完整性）
         details.forEach(detail -> detail.setPriceId(priceId));
-
         rateDetailService.saveRateDetails(priceId,details);
         return R.ok("费率同步成功");
     }

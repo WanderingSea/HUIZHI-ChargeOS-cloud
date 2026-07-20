@@ -19,6 +19,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="faultCode"    column="fault_code"    />
         <result property="faultReason"    column="fault_reason"    />
         <result property="faultTime"    column="fault_time"    />
+        <result property="smokeStatus"    column="smoke_status"    />
+        <result property="meterValue"    column="meter_value"    />
         <result property="qrCode"    column="qr_code"    />
         <result property="isHlht"    column="is_hlht"    />
         <result property="hlhtId"    column="hlht_id"    />
@@ -27,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectChargingPortVo">
-        select port_id, user_id, state, power, name, pile_id, device_id, create_time, gun_insert, gun_status, can_use, fault_code, fault_reason, fault_time, qr_code, is_hlht, hlht_id, tenant_id from c_charging_port
+        select port_id, user_id, state, power, name, pile_id, device_id, create_time, gun_insert, gun_status, can_use, fault_code, fault_reason, fault_time, smoke_status, meter_value, qr_code, is_hlht, hlht_id, tenant_id from c_charging_port
     </sql>
 
     <select id="selectChargingPortList"   resultType="com.hcp.system.api.domain.ChargingPort">
@@ -105,7 +107,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ,power,name,pile_id
         ,device_id,create_time,gun_insert
         ,gun_status,can_use,fault_code
-        ,fault_reason,fault_time,qr_code
+        ,fault_reason,fault_time,smoke_status,meter_value,qr_code
         ,is_hlht,hlht_id,tenant_id
         ,create_by,update_time,update_by
         )
@@ -113,7 +115,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                ,#{power,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{pileId,jdbcType=VARCHAR}
                ,#{deviceId,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},#{gunInsert,jdbcType=VARCHAR}
                ,#{gunStatus,jdbcType=INTEGER},#{canUse,jdbcType=INTEGER},#{faultCode,jdbcType=INTEGER}
-               ,#{faultReason,jdbcType=VARCHAR},#{faultTime,jdbcType=TIMESTAMP},#{qrCode,jdbcType=VARCHAR}
+               ,#{faultReason,jdbcType=VARCHAR},#{faultTime,jdbcType=TIMESTAMP},#{smokeStatus,jdbcType=TINYINT},#{meterValue,jdbcType=DECIMAL},#{qrCode,jdbcType=VARCHAR}
                ,#{isHlht,jdbcType=INTEGER},#{hlhtId,jdbcType=VARCHAR},#{tenantId,jdbcType=BIGINT}
                ,#{createBy,jdbcType=VARCHAR},#{updateTime,jdbcType=TIMESTAMP},#{updateBy,jdbcType=VARCHAR}
                )
@@ -135,6 +137,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="faultCode != null">fault_code,</if>
             <if test="faultReason != null">fault_reason,</if>
             <if test="faultTime != null">fault_time,</if>
+            <if test="smokeStatus != null">smoke_status,</if>
+            <if test="meterValue != null">meter_value,</if>
             <if test="qrCode != null">qr_code,</if>
             <if test="isHlht != null">is_hlht,</if>
             <if test="hlhtId != null">hlht_id,</if>
@@ -158,6 +162,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="faultCode != null">#{faultCode,jdbcType=INTEGER},</if>
             <if test="faultReason != null">#{faultReason,jdbcType=VARCHAR},</if>
             <if test="faultTime != null">#{faultTime,jdbcType=TIMESTAMP},</if>
+            <if test="smokeStatus != null">#{smokeStatus,jdbcType=TINYINT},</if>
+            <if test="meterValue != null">#{meterValue,jdbcType=DECIMAL},</if>
             <if test="qrCode != null">#{qrCode,jdbcType=VARCHAR},</if>
             <if test="isHlht != null">#{isHlht,jdbcType=INTEGER},</if>
             <if test="hlhtId != null">#{hlhtId,jdbcType=VARCHAR},</if>
@@ -209,6 +215,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="faultTime != null">
                 fault_time = #{faultTime,jdbcType=TIMESTAMP},
             </if>
+            <if test="smokeStatus != null">
+                smoke_status = #{smokeStatus,jdbcType=TINYINT},
+            </if>
+            <if test="meterValue != null">
+                meter_value = #{meterValue,jdbcType=DECIMAL},
+            </if>
             <if test="qrCode != null">
                 qr_code = #{qrCode,jdbcType=VARCHAR},
             </if>
@@ -249,6 +261,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             fault_code =  #{faultCode,jdbcType=INTEGER},
             fault_reason =  #{faultReason,jdbcType=VARCHAR},
             fault_time =  #{faultTime,jdbcType=TIMESTAMP},
+            smoke_status =  #{smokeStatus,jdbcType=TINYINT},
+            meter_value =  #{meterValue,jdbcType=DECIMAL},
             qr_code =  #{qrCode,jdbcType=VARCHAR},
             is_hlht =  #{isHlht,jdbcType=INTEGER},
             hlht_id =  #{hlhtId,jdbcType=VARCHAR},

@@ -27,7 +27,7 @@ services:
         ipv4_address: 172.18.0.6
   hcp-mysql:
     container_name: hcp-mysql
-    image: mysql:5.7
+    image: mysql:8.0
     build:
       context: ./mysql
     ports:
@@ -231,3 +231,66 @@ services:
     networks:
       cloud-net:
         ipv4_address: 172.18.0.13
+  hcp-operator:
+    container_name: hcp-operator
+    build:
+      context: hcp/modules/operator
+      dockerfile: dockerfile
+    ports:
+      - "39206:39206"
+    depends_on:
+      - hcp-redis
+      - hcp-mysql
+    links:
+      - hcp-redis
+      - hcp-mysql
+      - hcp-file
+    environment:
+      - NACOS_HOST=172.18.0.6
+      - NACOS_PORT=8848
+      - NETWORK_IP=192.168.1.4
+    networks:
+      cloud-net:
+        ipv4_address: 172.18.0.14
+  hcp-mp:
+    container_name: hcp-mp
+    build:
+      context: hcp/modules/mp
+      dockerfile: dockerfile
+    ports:
+      - "39205:39205"
+    depends_on:
+      - hcp-redis
+      - hcp-mysql
+    links:
+      - hcp-redis
+      - hcp-mysql
+      - hcp-file
+    environment:
+      - NACOS_HOST=172.18.0.6
+      - NACOS_PORT=8848
+      - NETWORK_IP=192.168.1.4
+    networks:
+      cloud-net:
+        ipv4_address: 172.18.0.15
+  hcp-simulator:
+    container_name: hcp-simulator
+    build:
+      context: hcp/modules/simulator
+      dockerfile: dockerfile
+    ports:
+      - "39207:39207"
+    depends_on:
+      - hcp-redis
+      - hcp-mysql
+    links:
+      - hcp-redis
+      - hcp-mysql
+      - hcp-file
+    environment:
+      - NACOS_HOST=172.18.0.6
+      - NACOS_PORT=8848
+      - NETWORK_IP=192.168.1.4
+    networks:
+      cloud-net:
+        ipv4_address: 172.18.0.16
