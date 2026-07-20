@@ -1,4 +1,4 @@
-﻿package com.hcp.simulator.common;
+package com.hcp.simulator.common;
 
 
 import cn.hutool.core.bean.BeanUtil;
