@@ -1,11 +1,14 @@
 package com.hcp.operator.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.hcp.common.core.annotation.Excel;
+import com.hcp.common.core.web.domain.BaseEntity;
 import com.hcp.common.core.web.domain.TenantEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.apache.poi.ss.formula.functions.T;
 
 import java.math.BigDecimal;
 
@@ -19,7 +22,6 @@ import java.math.BigDecimal;
  */
 @Data
 @TableName("c_charge_order_rate_detail")
-@Schema(description = "订单费率结算明细")
 public class ChargeOrderRateDetail extends TenantEntity {
 
     private static final long serialVersionUID = 1L;

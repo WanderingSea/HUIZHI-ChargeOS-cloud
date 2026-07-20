@@ -30,4 +30,13 @@ public class RateDetailDTO implements Serializable {
     @Schema(description = "结束时间")
     @JsonFormat(pattern = "HH:mm:ss")
     private String endTime;
+
+    // 添加这个构造函数（匹配代码调用）
+    public RateDetailDTO(Long priceId, BigDecimal elecRate, BigDecimal serviceRate, String startTime, String endTime) {
+        this.priceId = priceId;
+        this.elecRate = elecRate;
+        this.serviceRate = serviceRate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 }
