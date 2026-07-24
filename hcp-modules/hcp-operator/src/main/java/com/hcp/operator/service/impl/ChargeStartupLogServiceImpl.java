@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hcp.operator.domain.ChargeStartupLog;
 import com.hcp.operator.mapper.ChargeStartupLogMapper;
 import com.hcp.operator.service.IChargeStartupLogService;
+import com.hcp.system.api.domain.dto.StartupCompleteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,5 +44,27 @@ public class ChargeStartupLogServiceImpl implements IChargeStartupLogService
         LambdaQueryWrapper<ChargeStartupLog> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(ChargeStartupLog::getOrderId, orderId);
         return chargeStartupLogMapper.selectOne(wrapper);
+    }
+
+    /**
+     * 充电机启动完成上报（V2.0）
+     *
+     * @param dto 启动完成DTO
+     */
+    @Override
+    public void saveStartupComplete(StartupCompleteDTO dto)
+    {
+        ChargeStartupLog log = new ChargeStartupLog();
+        log.setPileId(dto.getPileId());
+        log.setPortId(dto.getPortId());
+        log.setOrderId(dto.getOrderId());
+        log.setStartupResult(dto.getStartupResult());
+        log.setFailCode(dto.getFailCode());
+        log.setMeterValue(dto.getMeterValue());
+        log.setVinCode(dto.getVinCode());
+        log.setSoc(dto.getSoc());
+        log.setBmsStatus(dto.getBmsStatus());
+        log.setChargerStatus(dto.getChargerStatus());
+        chargeStartupLogMapper.insert(log);
     }
 }

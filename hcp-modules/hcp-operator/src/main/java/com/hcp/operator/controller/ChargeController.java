@@ -17,9 +17,7 @@ import com.hcp.system.api.domain.ChargingOrder;
 import com.hcp.system.api.domain.ChargingPile;
 import com.hcp.system.api.domain.ChargingPort;
 import com.hcp.system.api.domain.Heartbeat;
-import com.hcp.system.api.domain.dto.HourlyEnergyDTO;
-import com.hcp.system.api.domain.dto.OrderRateDetailDTO;
-import com.hcp.system.api.domain.dto.RateDetailDTO;
+import com.hcp.system.api.domain.dto.*;
 import com.hcp.system.api.domain.vo.ChargingPileVO;
 import com.hcp.system.api.domain.vo.PlotDetailVo;
 import com.hcp.system.api.domain.vo.PlotInfoReqVO;
@@ -33,6 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +51,14 @@ public class ChargeController extends BaseController {
     private IChargingPortService chargingPortService;
     @Autowired
     private IChargingOrderService chargingOrderService;
+    @Autowired
+    private IDeviceFaultService deviceFaultService;
+    @Autowired
+    private IChargeStartupLogService chargeStartupLogService;
+    @Autowired
+    private IVinAuthLogService vinAuthLogService;
+    @Autowired
+    private IPowerControlLogService powerControlLogService;
 
     private final IRateDetailService rateDetailService;
     private final IChargeOrderRateDetailService chargeOrderRateDetailService;
@@ -257,13 +265,58 @@ public class ChargeController extends BaseController {
 
 
     /**
+     * 设备故障上报 (V2.0 0x50帧)
+     */
+    @PostMapping("/faultReport")
+    R<String> faultReport(@RequestBody FaultReportDTO dto) {
+        deviceFaultService.reportFault(dto);
+        return R.ok();
+    }
+
+    /**
+     * 设备故障复位上报 (V2.0 0x4B帧)
+     */
+    @PostMapping("/faultReset")
+    R<String> faultReset(@RequestBody FaultResetDTO dto) {
+        deviceFaultService.resetFault(dto);
+        return R.ok();
+    }
+
+    /**
+     * 充电机启动完成报告 (V2.0 0x4F帧)
+     */
+    @PostMapping("/startupComplete")
+    R<String> startupComplete(@RequestBody StartupCompleteDTO dto) {
+        chargeStartupLogService.saveStartupComplete(dto);
+        return R.ok();
+    }
+
+    /**
+     * VIN码鉴权上报 (V2.0 0xA9/0xAA帧)
+     */
+    @PostMapping("/vinAuth")
+    R<String> vinAuth(@RequestBody VinAuthDTO dto) {
+        vinAuthLogService.saveVinAuth(dto);
+        return R.ok();
+    }
+
+    /**
+     * 功率控制日志上报 (V2.0 0x60/0x59帧)
+     */
+    @PostMapping("/powerControl")
+    R<String> powerControl(@RequestBody PowerControlDTO dto) {
+        powerControlLogService.savePowerControl(dto);
+        return R.ok();
+    }
+
+    /**
      * 费率段同步（V2.0）<br>
      * 桩端/管理端上报该桩的费率模板，写入c_rate_detail表
      */
     @PostMapping("/rateDetailSync")
     @ApiOperation("接收桩同步的费率模板")
     public R<String> rateDetailSync(@RequestParam("priceId") Long priceId,
-                             @RequestBody List<RateDetailDTO> dtoList) {
+                                    @RequestBody List<RateDetailDTO> dtoList) {
         // 参数校验
         if (priceId == null) {
             return R.fail("定价规则ID不能为空");
@@ -336,6 +389,5 @@ public class ChargeController extends BaseController {
                 vinCode, lossTotalPower, tradeType);
         return R.ok("订单结算成功");
     }
-
 
 }

@@ -2,6 +2,7 @@ package com.hcp.operator.service;
 
 import java.util.List;
 import com.hcp.operator.domain.PowerControlLog;
+import com.hcp.system.api.domain.dto.PowerControlDTO;
 
 /**
  * 功率控制日志Service接口
@@ -26,4 +27,11 @@ public interface IPowerControlLogService
      * @return 功率控制日志列表
      */
     List<PowerControlLog> getListByPileId(String pileId);
+
+    /**
+     * 功率控制日志上报（V2.0）
+     *
+     * @param dto 功率控制DTO
+     */
+    void savePowerControl(PowerControlDTO dto);
 }

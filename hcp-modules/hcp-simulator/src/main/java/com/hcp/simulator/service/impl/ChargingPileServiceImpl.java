@@ -13,8 +13,8 @@ public class ChargingPileServiceImpl extends ServiceImpl<ChargingPileMapper, Cha
     @Override
     public void updateRunningStatus(String pileId, long status) {
         LambdaUpdateWrapper<ChargingPile> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(ChargingPile::getPileId, pileId)
-                .set(ChargingPile::getRunningStatus, status);
+        wrapper.set(ChargingPile::getRunningStatus, status)
+                .eq(ChargingPile::getPileId, pileId);
         this.update(wrapper);
     }
 }

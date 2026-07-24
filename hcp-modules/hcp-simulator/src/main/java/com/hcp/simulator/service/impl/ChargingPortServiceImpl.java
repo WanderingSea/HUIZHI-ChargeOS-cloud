@@ -23,10 +23,10 @@ public class ChargingPortServiceImpl extends ServiceImpl<ChargingPortMapper, Cha
     @Override
     public void updateGunStatus(String pileId, String deviceId, Long gunStatus, String state) {
         LambdaUpdateWrapper<ChargingPort> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(ChargingPort::getPileId, pileId)
-                .eq(ChargingPort::getDeviceId, deviceId)
-                .set(ChargingPort::getGunStatus, gunStatus)
-                .set(ChargingPort::getState, state);
+        wrapper.set(ChargingPort::getGunStatus, gunStatus)
+                .set(ChargingPort::getState, state)
+                .eq(ChargingPort::getPileId, pileId)
+                .eq(ChargingPort::getDeviceId, deviceId);
         this.update(wrapper);
     }
 }

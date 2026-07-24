@@ -3,6 +3,8 @@ package com.hcp.operator.service;
 import java.util.Date;
 import java.util.List;
 import com.hcp.operator.domain.DeviceFault;
+import com.hcp.system.api.domain.dto.FaultReportDTO;
+import com.hcp.system.api.domain.dto.FaultResetDTO;
 
 /**
  * 设备故障Service接口
@@ -52,4 +54,18 @@ public interface IDeviceFaultService
      * @return 结果
      */
     int reset(Long id, Date resetTime);
+
+    /**
+     * 设备故障上报（V2.0）
+     *
+     * @param dto 故障上报DTO
+     */
+    void reportFault(FaultReportDTO dto);
+
+    /**
+     * 设备故障复位上报（V2.0）
+     *
+     * @param dto 故障复位DTO
+     */
+    void resetFault(FaultResetDTO dto);
 }

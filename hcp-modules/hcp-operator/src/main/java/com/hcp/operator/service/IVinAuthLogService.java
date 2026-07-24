@@ -2,6 +2,7 @@ package com.hcp.operator.service;
 
 import java.util.List;
 import com.hcp.operator.domain.VinAuthLog;
+import com.hcp.system.api.domain.dto.VinAuthDTO;
 
 /**
  * VIN认证日志Service接口
@@ -26,4 +27,11 @@ public interface IVinAuthLogService
      * @return VIN认证日志列表
      */
     List<VinAuthLog> getListByPileId(String pileId);
+
+    /**
+     * VIN码鉴权上报（V2.0）
+     *
+     * @param dto VIN鉴权DTO
+     */
+    void saveVinAuth(VinAuthDTO dto);
 }

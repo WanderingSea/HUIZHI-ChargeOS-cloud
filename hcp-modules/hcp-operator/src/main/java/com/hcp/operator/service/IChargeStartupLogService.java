@@ -1,6 +1,7 @@
 package com.hcp.operator.service;
 
 import com.hcp.operator.domain.ChargeStartupLog;
+import com.hcp.system.api.domain.dto.StartupCompleteDTO;
 
 /**
  * 充电启动日志Service接口
@@ -25,4 +26,11 @@ public interface IChargeStartupLogService
      * @return 充电启动日志
      */
     ChargeStartupLog getByOrderId(String orderId);
+
+    /**
+     * 充电机启动完成上报（V2.0）
+     *
+     * @param dto 启动完成DTO
+     */
+    void saveStartupComplete(StartupCompleteDTO dto);
 }

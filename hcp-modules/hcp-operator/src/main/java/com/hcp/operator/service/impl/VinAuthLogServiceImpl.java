@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hcp.operator.domain.VinAuthLog;
 import com.hcp.operator.mapper.VinAuthLogMapper;
 import com.hcp.operator.service.IVinAuthLogService;
+import com.hcp.system.api.domain.dto.VinAuthDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,5 +46,22 @@ public class VinAuthLogServiceImpl implements IVinAuthLogService
         LambdaQueryWrapper<VinAuthLog> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(VinAuthLog::getPileId, pileId);
         return vinAuthLogMapper.selectList(wrapper);
+    }
+
+    /**
+     * VIN码鉴权上报（V2.0）
+     *
+     * @param dto VIN鉴权DTO
+     */
+    @Override
+    public void saveVinAuth(VinAuthDTO dto)
+    {
+        VinAuthLog log = new VinAuthLog();
+        log.setPileId(dto.getPileId());
+        log.setPortId(dto.getPortId());
+        log.setVinCode(dto.getVinCode());
+        log.setAuthResult(dto.getAuthResult());
+        log.setOrderId(dto.getOrderId());
+        vinAuthLogMapper.insert(log);
     }
 }

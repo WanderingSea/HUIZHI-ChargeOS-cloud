@@ -13,9 +13,11 @@ public class ChargingOrderServiceImpl extends ServiceImpl<ChargingOrderMapper, C
     @Override
     public void updateNoEndOrder(String pileId) {
         LambdaUpdateWrapper<ChargingOrder> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(ChargingOrder::getPileId, pileId)
+        wrapper.set(ChargingOrder::getOrderState, "2")
+                .eq(ChargingOrder::getPileId, pileId)
                 .ne(ChargingOrder::getOrderState, "5")
-                .set(ChargingOrder::getOrderState, "2");
+                .ne(ChargingOrder::getOrderState, "2")
+                .ne(ChargingOrder::getOrderState, "4");
         this.update(wrapper);
     }
 }
