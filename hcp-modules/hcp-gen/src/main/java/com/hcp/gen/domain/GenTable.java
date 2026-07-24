@@ -107,6 +107,7 @@ public class GenTable extends BaseEntity
     {
         return tplCategory != null && StringUtils.equals(GenConstants.TPL_SUB, tplCategory);
     }
+
     public boolean isTree()
     {
         return isTree(this.tplCategory);
