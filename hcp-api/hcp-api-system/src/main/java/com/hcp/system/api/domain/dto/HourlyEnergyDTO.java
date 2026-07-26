@@ -14,10 +14,10 @@ import java.math.BigDecimal;
 @Schema(description = "每小时电量dto")
 public class HourlyEnergyDTO implements Serializable {
     private static final long serialVersionUID = 1L;
-
+    @Schema(description = "订单ID")
     private String orderId;
-
+    @Schema(description = "时段索引（0~47，对应00:00~23:30）")
     private Integer slotIndex;
-
+    @Schema(description = "该时段用电量（kWh）")
     private BigDecimal energy;
 }

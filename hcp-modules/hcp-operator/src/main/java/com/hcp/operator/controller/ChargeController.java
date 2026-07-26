@@ -3,11 +3,9 @@ package com.hcp.operator.controller;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hcp.common.core.domain.R;
 import com.hcp.common.core.web.controller.BaseController;
-import com.hcp.common.core.web.domain.AjaxResult;
 import com.hcp.operator.domain.ChargeOrderHourlyEnergy;
 import com.hcp.operator.domain.ChargeOrderRateDetail;
 import com.hcp.operator.domain.RateDetail;
@@ -25,16 +23,11 @@ import com.hcp.system.api.domain.vo.PlotVO;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.Rate;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/charge")
@@ -292,7 +285,9 @@ public class ChargeController extends BaseController {
     }
 
     /**
-     * VIN码鉴权上报 (V2.0 0xA9/0xAA帧)
+     * VIN码鉴权上报 (V2.0 0xA9/0xAA帧) <br>
+     * VinAuth（VIN码鉴权）是充电桩向平台上报**车辆识别码（VIN）**的鉴权机制，对应 V2.0 协议的 0xA9/0xAA 帧。
+     * VIN码（Vehicle Identification Number）是车辆的唯一识别码，相当于汽车的"身份证号"，由17位字符组成。
      */
     @PostMapping("/vinAuth")
     R<String> vinAuth(@RequestBody VinAuthDTO dto) {
@@ -309,9 +304,29 @@ public class ChargeController extends BaseController {
         return R.ok();
     }
 
+    /*
+            充电开始 → 充电过程 → 充电结束
+                                ↓
+                    ┌────────────────────────┐
+                    │     v2OrderSettlement  │  ← 主结算接口
+                    │   (订单最终结算)        │
+                    └────────────────────────┘
+                                ↓
+              ┌─────────────────┼─────────────────┐
+              ▼                 ▼                 ▼
+      rateDetailSync      orderRateDetail    hourlyEnergy
+      (费率模板同步)       (订单费率明细)     (分时电量上报)
+    * */
+
     /**
      * 费率段同步（V2.0）<br>
-     * 桩端/管理端上报该桩的费率模板，写入c_rate_detail表
+     * 桩端/管理端上报该桩的费率模板，写入c_rate_detail表<br>
+     * 功能介绍：充电桩将本地存储的费率模板（分时电价策略）同步到平台<br>
+     * 触发时机：费率策略变更时、充电桩启动时<br>
+     * 数据内容：峰/平/谷时段划分、各时段电价（电费+服务费）<br>
+     * @param priceId 定价规则ID
+     * @param dtoList 费率数据列表：充电桩向平台同步的分时电价策略配置(不同时段不同电价)
+     * @return 结果
      */
     @PostMapping("/rateDetailSync")
     @ApiOperation("接收桩同步的费率模板")
@@ -337,7 +352,12 @@ public class ChargeController extends BaseController {
 
     /**
      * 订单费率明细上报（V2.0）<br>
-     * 充电结束后，接收桩端上送的订单费率明细
+     * 充电结束后，接收桩端上送的订单费率明细数据<br>
+     * 功能介绍：充电结束后，上报该订单在不同费率时段的用电明细<br>
+     * 触发时机：充电结束时<br>
+     * 数据内容：订单在各费率时段的用电量、分时电价（电费+服务费）<br>
+     * @param dto 订单费率明细数据
+     * @return 结果
      */
     @PostMapping("/orderRateDetail")
     @ApiOperation("接收订单费率明细")
@@ -351,6 +371,12 @@ public class ChargeController extends BaseController {
     /**
      * 分时电量上报（V2.0）<br>
      * 充电结束后，接收桩端上送的分时电量数据
+     * 功能介绍：上报订单按半小时粒度的用电量（一天48个时段）<br>
+     * 触发时机：充电结束时<br>
+     * 数据内容：每个半小时slot的用电量<br>
+     * @param dto 订单分时电量数据
+     * @param orderId 订单ID
+     * @return 结果
      */
     @PostMapping("/hourlyEnergy")
     @ApiOperation("接收订单分时电量数据")
@@ -365,6 +391,25 @@ public class ChargeController extends BaseController {
 
     /**
      * V2.0 订单结算
+     * 功能介绍：充电结束后，订单最终结算，是 V2.0 版本的核心结算接口br>
+     * 触发时机：充电完全结束后<br>
+     * 数据内容：订单总功率、订单总金额、订单总电费、订单总服务费、订单总损耗电量、订单总费用、订单停止原因<br>
+     * @param orderId 订单ID
+     * @param totalPower 订单总功率（kW）
+     * @param startTime 充电开始时间（yyyy-MM-dd HH:mm:ss）
+     * @param endTime 充电结束时间（yyyy-MM-dd HH:mm:ss）
+     * @param electricFee 订单总电费（元）
+     * @param serviceFee 订单总服务费（元）
+     * @param totalAmount 订单总金额（元）
+     * @param meterNumber 电表编号（可选）
+     * @param meterCipher 电表密码（可选）
+     * @param meterStartValue 电表开始值（可选）
+     * @param meterEndValue 电表结束值（可选）
+     * @param vinCode 车辆VIN码（可选）
+     * @param stopReason 订单停止原因
+     * @param lossTotalPower 订单总损耗电量（kWh）
+     * @param tradeType 订单总费用（元）
+     * @return 结果
      */
     @PostMapping("/V2OrderSettlement")
     @ApiOperation("V2.0 订单结算")

@@ -383,13 +383,13 @@ public class ChargingOrderServiceImpl implements IChargingOrderService
 
         // 更新新增的7个字段
         ChargingOrder order = chargingOrderMapper.getById(orderId);
-        order.setMeterNumber(meterNumber)
-              .setMeterCipher(meterCipher)
-              .setMeterStartValue(meterStartValue)
-              .setMeterEndValue(meterEndValue)
-              .setVinCode(vinCode)
-              .setLossTotalPower(lossTotalPower)
-              .setTradeType(tradeType);
+         order.setMeterNumber(meterNumber);
+         order.setMeterCipher(meterCipher);
+         order.setMeterStartValue(meterStartValue);
+         order.setMeterEndValue(meterEndValue);
+         order.setVinCode(vinCode);
+         order.setLossTotalPower(lossTotalPower);
+         order.setTradeType(tradeType);
         chargingOrderMapper.updateByPrimaryKey(order);
 
         // 48段费率计算 + 分时电量 + 费率明细写入

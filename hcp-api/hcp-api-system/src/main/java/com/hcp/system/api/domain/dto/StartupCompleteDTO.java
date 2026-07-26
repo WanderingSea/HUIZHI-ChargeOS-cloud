@@ -19,8 +19,20 @@ public class StartupCompleteDTO implements Serializable {
     private Integer startupResult;
     private Integer failCode;
     private BigDecimal meterValue;
+    /**
+     * VIN码（车辆识别码）
+     */
     private String vinCode;
+    /**
+     * 电池SOC值（剩余电量百分比）
+     */
     private BigDecimal soc;
+    /**
+     * BMS状态（电池管理系统状态）
+     */
     private Integer bmsStatus;
+    /**
+     * 充电机状态
+     */
     private Integer chargerStatus;
 }
