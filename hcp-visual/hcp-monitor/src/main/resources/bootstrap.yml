@@ -18,7 +18,7 @@ spring:
         #服务注册ip和端口
 #        ip: ${NETWORK_IP:172.16.228.117}
 #        port: ${server.port}
-        namespace: hcp
+        namespace: dev
       config:
         # 配置中心地址
         server-addr: ${spring.cloud.nacos.discovery.server-addr}
@@ -27,4 +27,4 @@ spring:
         # 共享配置
         shared-configs:
           - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
-        namespace: hcp
+        namespace: dev
