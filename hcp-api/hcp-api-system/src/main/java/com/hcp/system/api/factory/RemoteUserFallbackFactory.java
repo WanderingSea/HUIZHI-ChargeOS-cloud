@@ -2,6 +2,7 @@ package com.hcp.system.api.factory;
 
 import com.hcp.system.api.RemoteUserService;
 import com.hcp.system.api.domain.SysUser;
+import com.hcp.system.api.domain.dto.RegisterMerchantDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -12,7 +13,7 @@ import com.hcp.system.api.model.LoginUser;
 /**
  * 用户服务降级处理
  *
- * @author vctgo
+ * @author JHan
  */
 @Component
 public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserService>
@@ -26,7 +27,7 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
         return new RemoteUserService()
         {
             @Override
-            public R<LoginUser> getUserInfo(String username, String source)
+            public R<LoginUser> getUserInfo(String phone, String source)
             {
                 return R.fail("获取用户失败:" + throwable.getMessage());
             }
@@ -35,6 +36,12 @@ public class RemoteUserFallbackFactory implements FallbackFactory<RemoteUserServ
             public R<Boolean> registerUserInfo(SysUser sysUser, String source)
             {
                 return R.fail("注册用户失败:" + throwable.getMessage());
+            }
+
+            @Override
+            public R<String> registerMerchant(RegisterMerchantDTO dto, String source)
+            {
+                return R.fail("注册运营商失败:" + throwable.getMessage());
             }
         };
     }

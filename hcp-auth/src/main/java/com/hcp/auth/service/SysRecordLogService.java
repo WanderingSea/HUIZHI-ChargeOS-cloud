@@ -1,6 +1,7 @@
 package com.hcp.auth.service;
 
 import com.hcp.common.security.utils.SecurityUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.hcp.common.core.constant.Constants;
@@ -8,43 +9,43 @@ import com.hcp.common.core.constant.SecurityConstants;
 import com.hcp.common.core.utils.StringUtils;
 import com.hcp.common.core.utils.ip.IpUtils;
 import com.hcp.system.api.RemoteLogService;
-import com.hcp.system.api.domain.SysLogininfor;
+import com.hcp.system.api.domain.SysLoginInfo;
 
 /**
  * 记录日志方法
  *
- * @author vctgo
+ * @author JHan
  */
 @Component
+@RequiredArgsConstructor
 public class SysRecordLogService
 {
-    @Autowired
-    private RemoteLogService remoteLogService;
+    private final RemoteLogService remoteLogService;
 
     /**
      * 记录登录信息
      *
-     * @param username 用户名
+     * @param phone 用户手机号
      * @param status 状态
      * @param message 消息内容
      * @return
      */
-    public void recordLogininfor(String username, String status, String message)
+    public void recordLoginInfo(String phone, String status, String message)
     {
-        SysLogininfor logininfor = new SysLogininfor();
-        logininfor.setUserName(username);
-        logininfor.setIpaddr(IpUtils.getIpAddr());
-        logininfor.setMsg(message);
-        logininfor.setTenantId(SecurityUtils.getTenantId());
+        SysLoginInfo loginInfo = new SysLoginInfo();
+         loginInfo.setPhone(phone)
+                  .setIpaddr(IpUtils.getIpAddr())
+                  .setMsg(message)
+                  .setMerchantId(SecurityUtils.getMerchantId());
         // 日志状态
         if (StringUtils.equalsAny(status, Constants.LOGIN_SUCCESS, Constants.LOGOUT, Constants.REGISTER))
         {
-            logininfor.setStatus(Constants.LOGIN_SUCCESS_STATUS);
+            loginInfo.setStatus(Constants.LOGIN_SUCCESS_STATUS);
         }
         else if (Constants.LOGIN_FAIL.equals(status))
         {
-            logininfor.setStatus(Constants.LOGIN_FAIL_STATUS);
+            loginInfo.setStatus(Constants.LOGIN_FAIL_STATUS);
         }
-        remoteLogService.saveLogininfor(logininfor, SecurityConstants.INNER);
+        remoteLogService.saveLoginInfo(loginInfo, SecurityConstants.INNER);
     }
 }

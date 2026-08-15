@@ -1,5 +1,6 @@
 package com.hcp.common.security.auth;
 
+import com.hcp.common.security.annotation.PreAuthorizeUserRole;
 import com.hcp.common.security.annotation.RequiresPermissions;
 import com.hcp.common.security.annotation.RequiresRoles;
 import com.hcp.system.api.model.LoginUser;
@@ -7,10 +8,10 @@ import com.hcp.system.api.model.LoginUser;
 /**
  * Token 权限验证工具类
  *
- * @author vctgo
+ * @author Jhan
  */
-public class AuthUtil
-{
+public class AuthUtil {
+
     /**
      * 底层的 AuthLogic 对象
      */
@@ -164,4 +165,55 @@ public class AuthUtil
     {
         authLogic.checkPermiOr(permissions);
     }
+
+    /**
+     * 验证用户身份类型
+     *
+     * @param userType 用户身份类型
+     * @return 用户是否具备某身份类型
+     */
+    public static boolean hasUserType(int userType) {
+        return authLogic.hasUserType(userType);
+    }
+
+    /**
+     * 当前账号是否含有指定身份类型, 如果验证未通过，则抛出异常: NotUserTypeException
+     *
+     * @param userType 用户身份类型
+     */
+    public static void checkUserType(int userType){
+        authLogic.checkUserType(userType);
+    }
+
+    /**
+     * 根据注解传入参数鉴权, 如果验证未通过，则抛出异常: NotUserRoleException
+     *
+     * @param preAuthorizeUserRole 身份类型注解
+     */
+    public static void checkUserType(PreAuthorizeUserRole preAuthorizeUserRole)
+    {
+        authLogic.checkUserType(preAuthorizeUserRole);
+    }
+
+    /**
+     * 验证用户身份类型，必须全部匹配
+     *
+     * @param userTypes 用户身份类型数组
+     */
+    public static void checkUserTypeAnd(int... userTypes)
+    {
+        authLogic.checkUserTypeAnd(userTypes);
+    }
+
+    /**
+     * 验证用户身份类型，只需匹配其中一个
+     *
+     * @param userTypes 用户身份类型数组
+     */
+    public static void checkUserTypeOr(int... userTypes)
+    {
+        authLogic.checkUserTypeOr(userTypes);
+    }
+
+
 }

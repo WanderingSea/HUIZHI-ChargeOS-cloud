@@ -8,7 +8,7 @@ import com.hcp.system.api.domain.SysUser;
 /**
  * 用户 业务层
  *
- * @author vctgo
+ * @author JHan
  */
  public interface ISysUserService
 {
@@ -53,6 +53,13 @@ import com.hcp.system.api.domain.SysUser;
      SysUser selectUserByUserName(String userName);
 
     /**
+     * 通过手机号查询用户
+     * @param phone 手机号
+     * @return 用户对象信息
+     */
+     SysUser selectUserByPhone(String phone);
+
+    /**
      * 通过用户ID查询用户
      *
      * @param userId 用户ID
@@ -90,7 +97,7 @@ import com.hcp.system.api.domain.SysUser;
      * @param user 用户信息
      * @return 结果
      */
-    boolean checkPhoneUnique(SysUser user);
+    boolean checkUserPhoneUnique(SysUser user);
 
     /**
      * 校验email是否唯一

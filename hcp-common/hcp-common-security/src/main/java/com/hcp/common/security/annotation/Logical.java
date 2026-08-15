@@ -3,7 +3,7 @@ package com.hcp.common.security.annotation;
 /**
  * 权限注解的验证模式
  *
- * @author vctgo
+ * @author JHan
  *
  */
 public enum Logical

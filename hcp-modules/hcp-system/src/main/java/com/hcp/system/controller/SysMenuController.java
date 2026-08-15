@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.hcp.system.domain.SysSimpleMenu;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,14 +29,14 @@ import com.hcp.system.service.ISysMenuService;
 /**
  * 菜单信息
  *
- * @author vctgo
+ * @author JHan
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/menu")
 public class SysMenuController extends BaseController
 {
-    @Autowired
-    private ISysMenuService menuService;
+    private final ISysMenuService menuService;
 
     /**
      * 获取菜单列表

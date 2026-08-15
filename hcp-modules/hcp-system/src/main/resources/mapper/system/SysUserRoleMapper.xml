@@ -41,8 +41,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  	        #{userId}
             </foreach>
 	</delete>
-	<delete id="deleteUserRoleByTenantId">
-		delete from sys_user_role where tenant_id in
+	<delete id="deleteUserRoleByMerchantId">
+		delete from sys_user_role where merchant_id in
 		<foreach item="id" collection="array" open="(" separator="," close=")">
 			#{id}
 		</foreach>

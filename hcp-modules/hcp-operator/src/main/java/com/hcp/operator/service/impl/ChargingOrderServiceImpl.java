@@ -184,7 +184,7 @@ public class ChargingOrderServiceImpl implements IChargingOrderService
 
         Long userId = SecurityUtils.getUserId();
         // 非管理员或未选择用户 则查询当前用户数据
-        if (!SysUser.isAdmin(userId) && pileVo.getUserId()==null)
+        if (!SysUser.isSuperAdmin(userId) && pileVo.getUserId()==null)
         {
             pileVo.setUserId(userId);
         }

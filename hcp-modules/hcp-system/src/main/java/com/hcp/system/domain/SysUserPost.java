@@ -5,7 +5,7 @@ import lombok.Data;
 /**
  * 用户和岗位关联 sys_user_post
  *
- * @author vctgo
+ * @author JHan
  */
 @Data
 public class SysUserPost
@@ -17,6 +17,6 @@ public class SysUserPost
     private Long postId;
 
     /** 租户ID */
-    private Long tenantId;
+    private Long merchantId;
 
 }

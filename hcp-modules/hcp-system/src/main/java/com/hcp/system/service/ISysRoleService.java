@@ -10,7 +10,7 @@ import com.hcp.system.domain.SysUserRole;
 /**
  * 角色业务层
  *
- * @author vctgo
+ * @author JHan
  */
  public interface ISysRoleService
 {
@@ -21,6 +21,7 @@ import com.hcp.system.domain.SysUserRole;
      * @return 角色数据集合信息
      */
     IPage<SysRole> selectRolePage(SysRole role);
+
     /**
      * 根据条件分页查询角色数据
      *

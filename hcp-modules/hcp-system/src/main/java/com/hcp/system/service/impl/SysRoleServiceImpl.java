@@ -19,6 +19,7 @@ import com.hcp.system.mapper.SysRoleMapper;
 import com.hcp.system.mapper.SysRoleMenuMapper;
 import com.hcp.system.mapper.SysUserRoleMapper;
 import com.hcp.system.service.ISysRoleService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,22 +35,16 @@ import com.hcp.system.api.domain.SysUser;
 /**
  * 角色 业务层处理
  *
- * @author vctgo
+ * @author JHan
  */
 @Service
-public class SysRoleServiceImpl implements ISysRoleService
-{
-    @Autowired
-    private SysRoleMapper roleMapper;
+@RequiredArgsConstructor
+public class SysRoleServiceImpl implements ISysRoleService {
 
-    @Autowired
-    private SysRoleMenuMapper roleMenuMapper;
-
-    @Autowired
-    private SysUserRoleMapper userRoleMapper;
-
-    @Autowired
-    private SysRoleDeptMapper roleDeptMapper;
+    private final SysRoleMapper roleMapper;
+    private final SysRoleMenuMapper roleMenuMapper;
+    private final SysUserRoleMapper userRoleMapper;
+    private final SysRoleDeptMapper roleDeptMapper;
 
 
     /**
@@ -120,7 +115,7 @@ public class SysRoleServiceImpl implements ISysRoleService
         {
             if (StringUtils.isNotNull(perm))
             {
-                permsSet.addAll(Arrays.asList(perm.getRoleKey().trim().split(",")));
+                permsSet.addAll(Arrays.asList(perm.getRoleShow().trim().split(",")));
             }
         }
         return permsSet;
@@ -219,7 +214,7 @@ public class SysRoleServiceImpl implements ISysRoleService
     @Override
     public void checkRoleDataScope(Long roleId)
     {
-        if (!SysUser.isAdmin(SecurityUtils.getUserId()))
+        if (!SysUser.isSuperAdmin(SecurityUtils.getUserId()) || !SysUser.isPlatformAdmin(SecurityUtils.getUserId()))
         {
             SysRole role = new SysRole();
             role.setRoleId(roleId);

@@ -5,16 +5,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.hcp.common.core.context.SecurityContextHolder;
-import com.hcp.common.security.annotation.RequiresPermissions;
+import com.hcp.common.core.exception.auth.NotUserRoleException;
+import com.hcp.common.security.annotation.*;
 import org.springframework.util.PatternMatchUtils;
 import com.hcp.common.core.exception.auth.NotLoginException;
 import com.hcp.common.core.exception.auth.NotPermissionException;
 import com.hcp.common.core.exception.auth.NotRoleException;
 import com.hcp.common.core.utils.SpringUtils;
 import com.hcp.common.core.utils.StringUtils;
-import com.hcp.common.security.annotation.Logical;
-import com.hcp.common.security.annotation.RequiresLogin;
-import com.hcp.common.security.annotation.RequiresRoles;
 import com.hcp.common.security.service.TokenService;
 import com.hcp.common.security.utils.SecurityUtils;
 import com.hcp.system.api.model.LoginUser;
@@ -22,7 +20,7 @@ import com.hcp.system.api.model.LoginUser;
 /**
  * Token 权限验证，逻辑实现类
  *
- * @author vctgo
+ * @author JHan
  */
 public class AuthLogic
 {
@@ -263,6 +261,88 @@ public class AuthLogic
             throw new NotRoleException(roles);
         }
     }
+
+    /**
+     * 验证用户身份类型
+     *
+     * @param userType 用户身份类型
+     * @return 是否匹配
+     */
+    public boolean hasUserType(Integer userType) {
+        LoginUser loginUser = getLoginUser();
+        Integer currentUserType = loginUser.getUserType();
+        return currentUserType != null && currentUserType.equals(userType);
+    }
+
+    /**
+     * 验证用户身份类型, 如果验证未通过，则抛出异常: NotUserRoleException
+     *
+     * @param userType 用户身份类型
+     */
+    public void checkUserType(Integer userType)
+    {
+        if (!hasUserType(userType))
+        {
+            throw new NotUserRoleException(userType);
+        }
+    }
+
+    /**
+     * 根据注解(@PreAuthorizeUserRole)鉴权, 如果验证未通过，则抛出异常: NotUserRoleException
+     *
+     * @param preAuthorizeUserRole 注解对象
+     */
+    public void checkUserType(PreAuthorizeUserRole preAuthorizeUserRole) {
+        if (preAuthorizeUserRole.logical() == Logical.AND)
+        {
+            checkUserTypeAnd(preAuthorizeUserRole.value());
+        }
+        else
+        {
+            checkUserTypeOr(preAuthorizeUserRole.value());
+        }
+    }
+
+    /**
+     * 验证用户身份类型，必须全部匹配（通常用于单个值）
+     *
+     * @param userTypes 用户身份类型数组
+     */
+    public void checkUserTypeAnd(int... userTypes)
+    {
+        LoginUser loginUser = getLoginUser();
+        Integer currentUserType = loginUser.getUserType();
+        for (int userType : userTypes)
+        {
+            if (currentUserType == null || !currentUserType.equals(userType))
+            {
+                throw new NotUserRoleException(userTypes);
+            }
+        }
+    }
+
+    /**
+     * 验证用户身份类型，只需匹配其中一个
+     *
+     * @param userTypes 用户身份类型数组
+     */
+    public void checkUserTypeOr(int... userTypes)
+    {
+        LoginUser loginUser = getLoginUser();
+        Integer currentUserType = loginUser.getUserType();
+        for (int userType : userTypes)
+        {
+            if (currentUserType != null && currentUserType.equals(userType))
+            {
+                return;
+            }
+        }
+        if (userTypes.length > 0)
+        {
+            throw new NotUserRoleException(userTypes);
+        }
+    }
+
 
     /**
      * 根据注解(@RequiresLogin)鉴权

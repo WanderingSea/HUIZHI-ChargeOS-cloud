@@ -5,17 +5,17 @@ import lombok.Data;
 /**
  * 用户和角色关联 sys_user_role
  *
- * @author vctgo
+ * @author JHan
  */
 @Data
 public class SysUserRole
 {
-    /** 用户ID */
+    /** 后台管理级用户ID */
     private Long userId;
 
-    /** 角色ID */
+    /** 后台管理级角色身份ID */
     private Long roleId;
 
-    /** 租户ID */
-    private Long tenantId;
+    /** 运营商(租户)ID */
+    private Long merchantId;
 }

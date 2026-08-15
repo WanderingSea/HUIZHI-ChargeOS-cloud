@@ -10,7 +10,7 @@ import com.hcp.system.domain.vo.TreeSelect;
 /**
  * 菜单 业务层
  *
- * @author vctgo
+ * @author JHan
  */
  public interface ISysMenuService
 {

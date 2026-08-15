@@ -3,6 +3,8 @@ package com.hcp.gateway.filter;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicReference;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -21,18 +23,16 @@ import reactor.core.publisher.Flux;
 /**
  * 验证码过滤器
  *
- * @author vctgo
+ * @author JHan
  */
 @Component
+@RequiredArgsConstructor
 public class ValidateCodeFilter extends AbstractGatewayFilterFactory<Object>
 {
-    private final static String[] VALIDATE_URL = new String[] { "/auth/login", "/auth/register" };
+    private final static String[] VALIDATE_URL = new String[] { "/auth/login" };
 
-    @Autowired
-    private ValidateCodeService validateCodeService;
-
-    @Autowired
-    private CaptchaProperties captchaProperties;
+    private final ValidateCodeService validateCodeService;
+    private final CaptchaProperties captchaProperties;
 
     private static final String CODE = "code";
 

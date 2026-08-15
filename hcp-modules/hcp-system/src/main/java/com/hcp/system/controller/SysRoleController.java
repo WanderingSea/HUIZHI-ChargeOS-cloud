@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hcp.system.api.domain.SysDept;
 import com.hcp.system.service.ISysDeptService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,20 +33,17 @@ import com.hcp.system.service.ISysUserService;
 /**
  * 角色信息
  *
- * @author vctgo
+ * @author JHan
  */
 @RestController
 @RequestMapping("/role")
+@RequiredArgsConstructor
 public class SysRoleController extends BaseController
 {
-    @Autowired
-    private ISysRoleService roleService;
 
-    @Autowired
-    private ISysUserService userService;
-
-    @Autowired
-    private ISysDeptService deptService;
+    private final ISysRoleService roleService;
+    private final ISysUserService userService;
+    private final ISysDeptService deptService;
 
     @RequiresPermissions("system:role:list")
     @GetMapping("/list")
@@ -166,6 +164,7 @@ public class SysRoleController extends BaseController
     {
         return success(roleService.selectRoleAll());
     }
+
     /**
      * 查询已分配用户角色列表
      */

@@ -23,8 +23,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			#{userId}
         </foreach>
  	</delete>
-    <delete id="deleteUserPostByTenantId">
-		delete from sys_user_post where tenant_id in
+    <delete id="deleteUserPostByMerchantId">
+		delete from sys_user_post where merchant_id in
 		<foreach item="id" collection="array" open="(" separator="," close=")">
 			#{id}
 		</foreach>

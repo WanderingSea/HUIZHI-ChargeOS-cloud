@@ -84,7 +84,7 @@
 		order by m.parent_id, m.order_num
 	</select>
 
-	<select id="selectMenuListByRoleId" resultType="Long">
+	<select id="selectMenuListByRoleId" resultType="java.lang.Long">
 		select m.menu_id
 		from sys_menu m
             left join sys_role_menu rm on m.menu_id = rm.menu_id
@@ -95,14 +95,14 @@
 		order by m.parent_id, m.order_num
 	</select>
 
-	<select id="selectMenuPerms" resultType="String">
+	<select id="selectMenuPerms" resultType="java.lang.String">
 		select distinct m.perms
 		from sys_menu m
 			 left join sys_role_menu rm on m.menu_id = rm.menu_id
 			 left join sys_user_role ur on rm.role_id = ur.role_id
 	</select>
 
-	<select id="selectMenuPermsByUserId" parameterType="Long" resultType="String">
+	<select id="selectMenuPermsByUserId" parameterType="Long" resultType="java.lang.String">
 		select distinct m.perms
 		from sys_menu m
 			 left join sys_role_menu rm on m.menu_id = rm.menu_id
@@ -111,7 +111,7 @@
 		where m.status = '0' and r.status = '0' and ur.user_id = #{userId}
 	</select>
 
-	<select id="selectMenuPermsByRoleId" parameterType="Long" resultType="String">
+	<select id="selectMenuPermsByRoleId" parameterType="Long" resultType="java.lang.String">
 		select distinct m.perms
 		from sys_menu m
 				 left join sys_role_menu rm on m.menu_id = rm.menu_id
@@ -123,7 +123,7 @@
 		where menu_id = #{menuId}
 	</select>
 
-	<select id="hasChildByMenuId" resultType="Integer">
+	<select id="hasChildByMenuId" resultType="java.lang.Integer">
 	    select count(1) from sys_menu where parent_id = #{menuId}
 	</select>
 

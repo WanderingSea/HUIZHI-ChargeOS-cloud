@@ -6,6 +6,7 @@ import javax.validation.constraints.Size;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.hcp.common.core.web.domain.BaseEntity;
 import com.hcp.common.core.web.domain.TenantEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,12 +18,12 @@ import java.util.Set;
 /**
  * 角色表 sys_role
  *
- * @author vctgo
+ * @author JHan
  */
 @Data
 @NoArgsConstructor
 @TableName("sys_role")
-public class SysRole extends TenantEntity
+public class SysRole extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
@@ -34,14 +35,31 @@ public class SysRole extends TenantEntity
     /** 角色名称 */
     @Excel(name = "角色名称")
     @NotBlank(message = "角色名称不能为空")
-    @Size(min = 0, max = 30, message = "角色名称长度不能超过30个字符")
+    @Size(max = 30, message = "角色名称长度不能超过30个字符")
     private String roleName;
 
-    /** 角色权限 */
-    @Excel(name = "角色权限")
-    @NotBlank(message = "权限字符不能为空")
-    @Size(min = 0, max = 100, message = "权限字符长度不能超过100个字符")
+    /** 角色权限标识 */
+    @Excel(name = "角色权限标识")
+    @NotBlank(message = "角色权限标识不能为空")
+    @Size(max = 100, message = "角色权限标识长度不能超过100个字符")
     private String roleKey;
+
+    /**
+     * 角色权限标识 数字
+     */
+    @Excel(name = "角色类型标识(1-开发后台总管理/2-官方平台经营总后台/3-联盟运营商/4-普通运营商、个体商户/5-商户子账号)")
+    private Integer roleType;
+
+    /**
+     * 角色身份展示 3-is_agent/4-is_tenant/5-is_tenant_d
+     */
+    private String roleShow;
+
+    /**
+     * 角色类型标识 数字层级
+     */
+    @Excel(name = "角色类型层级(1-5,数字越小层级越高)")
+    private Integer roleLevel;
 
     /** 角色排序 */
     @Excel(name = "角色排序")
@@ -70,6 +88,9 @@ public class SysRole extends TenantEntity
 
     /** 备注 */
     private String remark;
+
+    /** 运营商ID */
+    private Long merchantId;
 
     @TableField(exist = false)
     /** 用户是否存在此角色标识 默认不存在 */

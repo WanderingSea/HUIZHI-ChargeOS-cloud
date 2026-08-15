@@ -76,11 +76,11 @@
             <artifactId>hcp-common-log</artifactId>
         </dependency>
 
-        <!-- hcp Common Swagger -->
-<!--        <dependency>-->
-<!--            <groupId>com.zkhz</groupId>-->
-<!--            <artifactId>hcp-common-swagger</artifactId>-->
-<!--        </dependency>-->
+        <!-- hcp Common Swagger (Knife4j) -->
+        <dependency>
+            <groupId>com.zkhz</groupId>
+            <artifactId>hcp-common-swagger</artifactId>
+        </dependency>
 
         <!-- hcp Common tenant -->
         <dependency>
@@ -93,11 +93,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
-            <version>4.4.0</version>
-        </dependency>
+        <!-- Knife4j API文档由 hcp-common-swagger 统一提供 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>

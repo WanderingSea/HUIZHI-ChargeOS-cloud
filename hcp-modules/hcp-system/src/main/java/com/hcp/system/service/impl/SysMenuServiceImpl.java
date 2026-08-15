@@ -17,7 +17,9 @@ import com.hcp.system.domain.vo.TreeSelect;
 import com.hcp.system.mapper.SysMenuMapper;
 import com.hcp.system.mapper.SysRoleMapper;
 import com.hcp.system.mapper.SysRoleMenuMapper;
+import com.hcp.system.mapper.SysUserMapper;
 import com.hcp.system.service.ISysMenuService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.hcp.common.core.constant.Constants;
@@ -30,21 +32,18 @@ import com.hcp.system.api.domain.SysUser;
 /**
  * 菜单 业务层处理
  *
- * @author vctgo
+ * @author JHan
  */
 @Service
+@RequiredArgsConstructor
 public class SysMenuServiceImpl implements ISysMenuService
 {
     public static final String PREMISSION_STRING = "perms[\"{0}\"]";
 
-    @Autowired
-    private SysMenuMapper menuMapper;
-
-    @Autowired
-    private SysRoleMapper roleMapper;
-
-    @Autowired
-    private SysRoleMenuMapper roleMenuMapper;
+    private final SysMenuMapper menuMapper;
+    private final SysRoleMapper roleMapper;
+    private final SysRoleMenuMapper roleMenuMapper;
+    private final SysUserMapper userMapper;
 
     /**
      * 根据用户查询系统菜单列表
@@ -67,10 +66,14 @@ public class SysMenuServiceImpl implements ISysMenuService
     @Override
     public List<SysMenu> selectMenuList(SysMenu menu, Long userId)
     {
+        // 获取用户
+        SysUser user = userMapper.selectById(userId);
+        // 获取身份id
+        Long role = Long.valueOf(user.getUserType().getValue());
+
         List<SysMenu> menuList = null;
         // 管理员显示所有菜单信息
-        if (SysUser.isAdmin(userId))
-        {
+        if (SysUser.isSuperAdmin(role)) {
             menuList = menuMapper.selectMenuList(menu);
         }
         else
@@ -144,7 +147,7 @@ public class SysMenuServiceImpl implements ISysMenuService
     public List<SysMenu> selectMenuTreeByUserId(Long userId)
     {
         List<SysMenu> menus = null;
-        if (SecurityUtils.isAdmin(userId))
+        if (SecurityUtils.isPlatformAdmin(userId))
         {
             menus = menuMapper.selectMenuTreeAll();
         }

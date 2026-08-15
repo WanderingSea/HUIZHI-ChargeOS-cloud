@@ -18,7 +18,7 @@ import feign.RequestTemplate;
 /**
  * feign 请求拦截器
  *
- * @author vctgo
+ * @author JHan
  */
 @Slf4j
 @Component
@@ -63,16 +63,16 @@ public class FeignRequestInterceptor implements RequestInterceptor
                     requestTemplate.header(key, (String) remoteheader.get(key));
                 }
             }
-            String tenantid = headers.get(SecurityConstants.DETAILS_TENANT_ID);
-            if (StringUtils.isNotEmpty(tenantid))
+            String merchantId = headers.get(SecurityConstants.DETAILS_MERCHANT_ID);
+            if (StringUtils.isNotEmpty(merchantId))
             {
-                requestTemplate.header(SecurityConstants.DETAILS_TENANT_ID, tenantid);
+                requestTemplate.header(SecurityConstants.DETAILS_MERCHANT_ID, merchantId);
             }
 
-            String deptid = headers.get(SecurityConstants.DETAILS_DEPT_ID);
-            if (StringUtils.isNotEmpty(deptid))
+            String deptId = headers.get(SecurityConstants.DETAILS_DEPT_ID);
+            if (StringUtils.isNotEmpty(deptId))
             {
-                requestTemplate.header(SecurityConstants.DETAILS_DEPT_ID, deptid);
+                requestTemplate.header(SecurityConstants.DETAILS_DEPT_ID, deptId);
             }
 
             // 配置客户端IP

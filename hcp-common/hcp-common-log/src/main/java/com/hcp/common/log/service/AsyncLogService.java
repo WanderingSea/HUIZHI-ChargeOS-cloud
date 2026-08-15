@@ -11,7 +11,7 @@ import com.hcp.system.api.domain.SysOperLog;
 /**
  * 异步调用日志服务
  *
- * @author vctgo
+ * @author JHan
  */
 @Service
 public class AsyncLogService
@@ -24,7 +24,7 @@ public class AsyncLogService
      */
     @Async
     public void saveSysLog(SysOperLog sysOperLog) throws Exception {
-        sysOperLog.setTenantId(SecurityUtils.getTenantId());
+        sysOperLog.setTenantId(SecurityUtils.getMerchantId());
         remoteLogService.saveLog(sysOperLog, SecurityConstants.INNER);
     }
 }

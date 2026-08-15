@@ -9,8 +9,8 @@ import org.apache.ibatis.annotations.Param;
 /**
  * 租户管理Mapper接口
  *
- * @author vctgo
- * @date 2022-04-11
+ * @author JHan
+ * @date 2026-08-12
  */
 public interface SysTenantMapper extends BaseMapperX<SysTenant>
 {

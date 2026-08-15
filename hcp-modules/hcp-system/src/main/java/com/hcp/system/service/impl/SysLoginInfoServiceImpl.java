@@ -12,62 +12,60 @@ import com.hcp.common.core.web.domain.AjaxResult;
 import com.hcp.common.mybatisplus.constant.MybatisPageConstants;
 import com.hcp.common.redis.service.RedisService;
 import com.hcp.system.domain.SysLoginCount;
-import com.hcp.system.mapper.SysLogininforMapper;
-import com.hcp.system.service.ISysLogininforService;
+import com.hcp.system.mapper.SysLoginInfoMapper;
+import com.hcp.system.service.ISysLoginInfoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.hcp.system.api.domain.SysLogininfor;
+import com.hcp.system.api.domain.SysLoginInfo;
 
 /**
  * 系统访问日志情况信息 服务层处理
  *
- * @author vctgo
+ * @author JHan
  */
 @Service
-public class SysLogininforServiceImpl implements ISysLogininforService
+@RequiredArgsConstructor
+public class SysLoginInfoServiceImpl implements ISysLoginInfoService
 {
-
-    @Autowired
-    private SysLogininforMapper logininforMapper;
-
-    @Autowired
-    private RedisService redisService;
+    private final SysLoginInfoMapper loginInfoMapper;
+    private final RedisService redisService;
 
     /**
      * 新增系统登录日志
      *
-     * @param logininfor 访问日志对象
+     * @param loginInfo 访问日志对象
      */
     @Override
-    public int insertLogininfor(SysLogininfor logininfor)
+    public int insertLoginInfo(SysLoginInfo loginInfo)
     {
-        return logininforMapper.insertLogininfor(logininfor);
+        return loginInfoMapper.insertLoginInfo(loginInfo);
     }
 
     /**
      * 查询系统登录日志集合
      *
-     * @param logininfor 访问日志对象
+     * @param loginInfo 访问日志对象
      * @return 登录记录集合
      */
     @Override
-    public IPage<SysLogininfor> selectLogininforPage(SysLogininfor logininfor)
+    public IPage<SysLoginInfo> selectLoginInfoPage(SysLoginInfo loginInfo)
     {
         Page mpPage =new Page(Convert.toLong(ServletUtils.getParameterToInt(MybatisPageConstants.PAGE_NUM),1L)
                 ,Convert.toLong(ServletUtils.getParameterToInt(MybatisPageConstants.PAGE_SIZE),10L));
-        return logininforMapper.selectLogininforList(mpPage,logininfor);
+        return loginInfoMapper.selectLoginInfoList(mpPage,loginInfo);
     }
 
     /**
      * 查询系统登录日志集合
      *
-     * @param logininfor 访问日志对象
+     * @param loginInfo 访问日志对象
      * @return 登录记录集合
      */
     @Override
-    public List<SysLogininfor> selectLogininforList(SysLogininfor logininfor)
+    public List<SysLoginInfo> selectLoginInfoList(SysLoginInfo loginInfo)
     {
-        return logininforMapper.selectLogininforList(logininfor);
+        return loginInfoMapper.selectLoginInfoList(loginInfo);
     }
 
     /**
@@ -77,18 +75,18 @@ public class SysLogininforServiceImpl implements ISysLogininforService
      * @return 结果
      */
     @Override
-    public int deleteLogininforByIds(Long[] infoIds)
+    public int deleteLoginInfoByIds(Long[] infoIds)
     {
-        return logininforMapper.deleteLogininforByIds(infoIds);
+        return loginInfoMapper.deleteLoginInfoByIds(infoIds);
     }
 
     /**
      * 清空系统登录日志
      */
     @Override
-    public void cleanLogininfor()
+    public void cleanLoginInfo()
     {
-        logininforMapper.cleanLogininfor();
+        loginInfoMapper.cleanLoginInfo();
     }
 
     /**
@@ -96,17 +94,17 @@ public class SysLogininforServiceImpl implements ISysLogininforService
      * @return
      */
     @Override
-    public AjaxResult logincount() {
+    public AjaxResult loginCount() {
         SysLoginCount loginCountInfo = new SysLoginCount();
         //step1 在线人数
         Collection<String> online = redisService.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
         loginCountInfo.setOnlineCount(String.valueOf(online.size()));
         //step2 累积登陆人数 超级管理员统计所有
-        loginCountInfo.setLoginCount(String.valueOf(logininforMapper.countLogininfo()));
+        loginCountInfo.setLoginCount(String.valueOf(loginInfoMapper.countLoginInfo()));
         //step 累积租户数
-        loginCountInfo.setTenantCount(String.valueOf(logininforMapper.countTenant()));
+        loginCountInfo.setTenantCount(String.valueOf(loginInfoMapper.countTenant()));
         //step4 累积注册人数
-        loginCountInfo.setRegisterCount(String.valueOf(logininforMapper.countRegister()));
+        loginCountInfo.setRegisterCount(String.valueOf(loginInfoMapper.countRegister()));
         return AjaxResult.success(loginCountInfo);
     }
 }

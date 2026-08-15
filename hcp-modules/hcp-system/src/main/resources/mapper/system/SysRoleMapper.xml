@@ -8,6 +8,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<id     property="roleId"             column="role_id"               />
 		<result property="roleName"           column="role_name"             />
 		<result property="roleKey"            column="role_key"              />
+		<result property="roleType"           column="role_type"             />
+		<result property="roleShow"           column="role_show"             />
+		<result property="roleLevel"          column="role_level"            />
 		<result property="roleSort"           column="role_sort"             />
 		<result property="dataScope"          column="data_scope"            />
 		<result property="menuCheckStrictly"  column="menu_check_strictly"   />
@@ -19,18 +22,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="updateBy"           column="update_by"             />
 		<result property="updateTime"         column="update_time"           />
 		<result property="remark"             column="remark"                />
-		<result property="tenantId"           column="tenant_id"             />
+		<result property="merchantId"           column="merchant_id"             />
 	</resultMap>
 
 	<select id="queryAdminRole" parameterType="Long" resultMap="SysRoleResult">
 	    select distinct r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.menu_check_strictly, r.dept_check_strictly,
-            r.status, r.del_flag, r.create_time, r.remark,tenant_id
+            r.status, r.del_flag, r.create_time, r.remark, r.merchant_id
         from sys_role r
-		where r.tenant_id = #{tenantId} and r.role_key = 'admin' order by role_id desc
+		where r.merchant_id = #{merchantId} and r.role_key = 'admin' order by role_id desc
 	</select>
 
 	<sql id="selectRoleVo">
-	    select distinct r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.menu_check_strictly, r.dept_check_strictly,
+	    select distinct r.role_id, r.role_name, r.role_key, r.role_type,r.role_show,r.role_level,r.role_sort, r.data_scope, r.menu_check_strictly, r.dept_check_strictly,
             r.status, r.del_flag, r.create_time, r.remark,r.admin_role
         from sys_role r
 	        left join sys_user_role ur on ur.role_id = r.role_id
@@ -73,7 +76,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<include refid="selectRoleVo"/>
 	</select>
 
-	<select id="selectRoleListByUserId" parameterType="Long" resultType="Long">
+	<select id="selectRoleListByUserId" parameterType="Long" resultType="java.lang.Long">
 		select r.role_id
         from sys_role r
 	        left join sys_user_role ur on ur.role_id = r.role_id
@@ -100,8 +103,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<include refid="selectRoleVo"/>
 		 where r.role_key=#{roleKey} and r.del_flag = '0' limit 1
 	</select>
-    <select id="selectRoleByTenant" resultType="com.hcp.system.api.domain.SysRole">
-		select role_id from sys_role where tenant_id= #{tenantid} and admin_role= 1
+    <select id="selectRoleByMerchantId" resultType="com.hcp.system.api.domain.SysRole">
+		select role_id from sys_role where merchant_id= #{merchantId} and admin_role= 1
 	</select>
 
     <insert id="insertRole"  useGeneratedKeys="true" keyProperty="roleId">
@@ -159,8 +162,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			#{roleId}
         </foreach>
  	</delete>
-    <delete id="deleteRoleByTenantId">
-		delete from sys_role where tenant_id in
+    <delete id="deleteRoleByMerchantId">
+		delete from sys_role where merchant_id in
 		<foreach item="id" collection="array" open="(" separator="," close=")">
 			#{id}
 		</foreach>

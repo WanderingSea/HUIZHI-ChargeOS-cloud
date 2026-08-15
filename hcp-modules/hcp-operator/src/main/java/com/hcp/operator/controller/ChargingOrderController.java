@@ -49,7 +49,7 @@ public class ChargingOrderController extends BaseController
     {
         Long userId = SecurityUtils.getUserId();
         // 非管理员或未选择用户 则查询当前用户数据
-        if (!SysUser.isAdmin(userId))
+        if (!SysUser.isSuperAdmin(userId))
         {
             chargingOrder.setUserId(userId);
         }
@@ -67,7 +67,7 @@ public class ChargingOrderController extends BaseController
     {
         Long userId = SecurityUtils.getUserId();
         // 非管理员或未选择用户 则查询当前用户数据
-        if (!SysUser.isAdmin(userId))
+        if (!SysUser.isSuperAdmin(userId))
         {
             chargingOrder.setUserId(userId);
         }

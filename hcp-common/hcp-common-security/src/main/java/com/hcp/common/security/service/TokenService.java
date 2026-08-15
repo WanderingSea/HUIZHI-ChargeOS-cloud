@@ -9,6 +9,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.hcp.common.core.utils.ip.AddressUtils;
 import eu.bitwalker.useragentutils.UserAgent;
 import com.hcp.common.security.utils.SecurityUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,14 +27,14 @@ import com.hcp.system.api.model.LoginUser;
 /**
  * token验证处理
  *
- * @author vctgo
+ * @author JHan
  */
 @Slf4j
 @Component
-public class TokenService
-{
-    @Autowired
-    private RedisService redisService;
+@RequiredArgsConstructor
+public class TokenService {
+
+    private final RedisService redisService;
 
     protected static final long MILLIS_SECOND = 1000;
 
@@ -46,19 +47,29 @@ public class TokenService
     private final static Long MILLIS_MINUTE_TEN = CacheConstants.REFRESH_TIME * MILLIS_MINUTE;
 
     /**
-     * 创建令牌
+     * 创建token令牌
      */
-    public Map<String, Object> createToken(LoginUser loginUser)
-    {
+    public Map<String, Object> createToken(LoginUser loginUser) {
         String token = IdUtils.fastUUID();
+        // 操作者id
         Long userId = loginUser.getSysUser().getUserId();
+        // 操作者手机号
+        String phone = loginUser.getSysUser().getPhone();
+        // 操作者账号
         String userName = loginUser.getSysUser().getUserName();
-        Long tenantId = loginUser.getSysUser().getTenantId();
+        // 操作者所属运营商id
+        Long merchantId = loginUser.getSysUser().getMerchantId();
+        // 操作者所属部门id
         Long deptId = loginUser.getSysUser().getDeptId();
-        loginUser.setToken(token);
-        loginUser.setUserid(userId);
-        loginUser.setUsername(userName);
-        loginUser.setIpaddr(IpUtils.getIpAddr());
+        // 操作者身份
+        Integer userType = loginUser.getUserType();
+
+        loginUser.setToken(token)
+                 .setUserId(userId)
+                 .setUsername(userName)
+                 .setPhone(phone)
+                 .setIpaddr(IpUtils.getIpAddr());
+
         //添加地址信息
         setUserAgent(loginUser);
         refreshToken(loginUser);
@@ -67,16 +78,20 @@ public class TokenService
         Map<String, Object> claimsMap = new HashMap<String, Object>();
         claimsMap.put(SecurityConstants.USER_KEY, token);
         claimsMap.put(SecurityConstants.DETAILS_USER_ID, userId);
-        claimsMap.put(SecurityConstants.DETAILS_USERNAME, userName);
+        claimsMap.put(SecurityConstants.PHONE, phone);
         //租户id
-        claimsMap.put(SecurityConstants.DETAILS_TENANT_ID, tenantId);
+        claimsMap.put(SecurityConstants.DETAILS_MERCHANT_ID, merchantId);
         //部门id
         claimsMap.put(SecurityConstants.DETAILS_DEPT_ID, deptId);
         // 接口返回信息
         Map<String, Object> rspMap = new HashMap<String, Object>();
-        rspMap.put("access_token", JwtUtils.createToken(claimsMap));
-        rspMap.put("expires_in", expireTime);
-        rspMap.put("tenant_id", tenantId);
+        rspMap.put("token", JwtUtils.createToken(claimsMap));
+        rspMap.put("expiresIn", expireTime);
+        rspMap.put("merchantId", merchantId);
+        rspMap.put("account", userName);
+        rspMap.put("securityCode", phone);
+        rspMap.put("userAttribute", userType);
+
         return rspMap;
     }
 
@@ -114,8 +129,8 @@ public class TokenService
         {
             if (StringUtils.isNotEmpty(token))
             {
-                String userkey = JwtUtils.getUserKey(token);
-                user = redisService.getCacheObject(getTokenKey(userkey));
+                String userKey = JwtUtils.getUserKey(token);
+                user = redisService.getCacheObject(getTokenKey(userKey));
                 return user;
             }
         }
@@ -144,8 +159,8 @@ public class TokenService
     {
         if (StringUtils.isNotEmpty(token))
         {
-            String userkey = JwtUtils.getUserKey(token);
-            redisService.deleteObject(getTokenKey(userkey));
+            String userKey = JwtUtils.getUserKey(token);
+            redisService.deleteObject(getTokenKey(userKey));
         }
     }
 
@@ -190,8 +205,11 @@ public class TokenService
      */
     public void setUserAgent(LoginUser loginUser)
     {
-        UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtils.getRequest().getHeader("User-Agent"));
-        String ip = IpUtils.getIpAddr(ServletUtils.getRequest());
+        HttpServletRequest request = ServletUtils.getRequest();
+        if (request == null) return;  // 非 HTTP 场景跳过
+
+        UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
+        String ip = IpUtils.getIpAddr(request);
         loginUser.setIpaddr(ip);
         loginUser.setLoginLocation(AddressUtils.getRealAddressByIP(ip));
         loginUser.setBrowser(userAgent.getBrowser().getName());

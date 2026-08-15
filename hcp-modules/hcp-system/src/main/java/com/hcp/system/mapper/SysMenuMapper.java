@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Param;
 /**
  * 菜单表 数据层
  *
- * @author vctgo
+ * @author JHan
  */
  public interface SysMenuMapper extends BaseMapperX<SysMenu>
 {
@@ -68,7 +68,8 @@ import org.apache.ibatis.annotations.Param;
      *
      * @return 菜单列表
      */
-     List<SysMenu> selectMenuTreeAll();
+    @InterceptorIgnore(tenantLine = "1")
+    List<SysMenu> selectMenuTreeAll();
 
     /**
      * 根据用户ID查询菜单
@@ -76,7 +77,8 @@ import org.apache.ibatis.annotations.Param;
      * @param userId 用户ID
      * @return 菜单列表
      */
-     List<SysMenu> selectMenuTreeByUserId(Long userId);
+    @InterceptorIgnore(tenantLine = "1")
+    List<SysMenu> selectMenuTreeByUserId(Long userId);
 
     /**
      * 根据角色ID查询菜单树信息

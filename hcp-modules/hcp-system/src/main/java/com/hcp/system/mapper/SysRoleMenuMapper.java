@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Param;
 /**
  * 角色与菜单关联表 数据层
  *
- * @author vctgo
+ * @author JHan
  */
  public interface SysRoleMenuMapper
 {
@@ -36,7 +36,7 @@ import org.apache.ibatis.annotations.Param;
      * @return 结果
      */
     @InterceptorIgnore(tenantLine = "1")
-    int deleteRoleMenuByTenantId(Long tenantId);
+    int deleteRoleMenuByMerchantId(Long merchantId);
 
     /**
      * 批量删除角色菜单关联信息
@@ -63,7 +63,7 @@ import org.apache.ibatis.annotations.Param;
      * @return 结果
      */
     @InterceptorIgnore(tenantLine = "1")
-    int deleteRoleMenuByTenantIds(Long[] ids);
+    int deleteRoleMenuByMerchantIds(Long[] ids);
 
 
     /**
@@ -73,7 +73,7 @@ import org.apache.ibatis.annotations.Param;
      * @return 结果
      */
     @InterceptorIgnore(tenantLine = "1")
-    int deleteRoleMenuByTenantIdAndPackage(@Param("tenantId") Long tenantId,@Param("menuids") Long[] menuids);
+    int deleteRoleMenuByMerchantIdAndPackage(@Param("merchantId") Long merchantId,@Param("menuids") Long[] menuids);
 
 
     /**

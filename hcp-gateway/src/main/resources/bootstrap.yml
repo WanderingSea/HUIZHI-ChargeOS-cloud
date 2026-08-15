@@ -21,7 +21,7 @@ spring:
         # 服务注册地址
         server-addr: ${NACOS_HOST:127.0.0.1}:${NACOS_PORT:8848}
         #服务注册ip和端口
-#        ip: ${NETWORK_IP:172.16.228.117}
+        #ip: 127.0.0.1
 #        port: ${server.port}
         namespace: dev
       config:

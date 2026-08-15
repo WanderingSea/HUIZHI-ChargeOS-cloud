@@ -24,7 +24,7 @@ public class MyTenantHandler implements TenantLineHandler {
      */
     @Override
     public Expression getTenantId() {
-        return new LongValue( SecurityUtils.getTenantId());
+        return new LongValue( SecurityUtils.getMerchantId());
     }
 
     /**

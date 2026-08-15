@@ -1,5 +1,6 @@
 package com.hcp.common.security.handler;
 
+import com.hcp.common.core.exception.auth.NotUserRoleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
@@ -23,7 +24,7 @@ import com.hcp.common.core.web.domain.AjaxResult;
 /**
  * 全局异常处理器
  *
- * @author vctgo
+ * @author Jhan
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler
@@ -50,6 +51,14 @@ public class GlobalExceptionHandler
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',角色权限校验失败'{}'", requestURI, e.getMessage());
         return AjaxResult.error(HttpStatus.FORBIDDEN, "没有访问权限，请联系管理员授权");
+    }
+
+    @ExceptionHandler(NotUserRoleException.class)
+    public AjaxResult handleNotUserRoleException(NotUserRoleException e, HttpServletRequest request)
+    {
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',用户身份校验失败'{}'", requestURI, e.getMessage());
+        return AjaxResult.error(HttpStatus.FORBIDDEN, "无权限访问，请联系管理员");
     }
 
     /**

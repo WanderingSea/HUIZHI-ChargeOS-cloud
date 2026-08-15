@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.data.redis.core.HashOperations;
@@ -16,14 +18,14 @@ import org.springframework.stereotype.Component;
 /**
  * spring redis 工具类
  *
- * @author vctgo
+ * @author JHan
  **/
 @SuppressWarnings(value = { "unchecked", "rawtypes" })
 @Component
+@RequiredArgsConstructor
 public class RedisService
 {
-    @Autowired
-    public RedisTemplate redisTemplate;
+    private final RedisTemplate redisTemplate;
 
     /**
      * 缓存基本的对象，Integer、String、实体类等

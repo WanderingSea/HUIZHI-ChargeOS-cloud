@@ -3,14 +3,14 @@ package com.hcp.common.core.constant;
 /**
  * 权限相关通用常量
  *
- * @author vctgo
+ * @author JHan
  */
 public class SecurityConstants
 {
     /**
-     * 租户ID字段
+     * 运营商(租户)ID字段
      */
-    public static final String DETAILS_TENANT_ID = "tenant-id";
+    public static final String DETAILS_MERCHANT_ID = "merchant_id";
 
     /**
      * 部门ID字段
@@ -18,14 +18,29 @@ public class SecurityConstants
     public static final String DETAILS_DEPT_ID = "dept_id";
 
     /**
+     * 用户手机号字段
+     */
+    public static final String PHONE = "phone";
+
+    /**
      * 用户ID字段
      */
     public static final String DETAILS_USER_ID = "user_id";
 
     /**
-     * 用户名字段
+     * 用户账号字段
      */
     public static final String DETAILS_USERNAME = "username";
+
+    /**
+     * 用户真实姓名字段
+     */
+    public static final String REAL_NAME = "real_name";
+
+    /**
+     * 用户身份类型字段
+     */
+    public static final String USER_TYPE = "user_type";
 
     /**
      * 授权信息字段
@@ -35,7 +50,7 @@ public class SecurityConstants
     /**
      * 请求来源
      */
-    public static final String FROM_SOURCE = "from-source";
+    public static final String FROM_SOURCE = "from_source";
 
     /**
      * 内部请求
@@ -51,6 +66,7 @@ public class SecurityConstants
      * 登录用户
      */
     public static final String LOGIN_USER = "login_user";
+
     /**
      * 角色权限
      */
@@ -60,4 +76,7 @@ public class SecurityConstants
      * 授权信息字段
      */
     public static final String REMOTE_HEADER = "remoteheader";
+
+
+
 }

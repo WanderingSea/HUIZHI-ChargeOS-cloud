@@ -3,32 +3,51 @@ package com.hcp.system.api.model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+
+import com.hcp.common.core.enums.UserStatusEnum;
+import com.hcp.common.core.enums.UserTypeEnum;
 import com.hcp.system.api.domain.SysUser;
 import lombok.Data;
 
 /**
- * 用户信息
+ *  后台管理级用户信息
  *
- * @author vctgo
+ * @author JHan
  */
 @Data
-public class LoginUser implements Serializable
-{
+public class LoginUser implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     /**
      * 用户唯一标识
      */
     private String token;
-    /**
-     * 用户名id
-     */
-    private Long userid;
 
     /**
-     * 用户名
+     * 后台管理级用户身份类型
+     */
+    private Integer userType;
+
+    /**
+     * 后台管理级用户手机号
+     */
+     private String phone;
+
+    /**
+     * 后台管理级用户名id
+     */
+    private Long userId;
+
+    /**
+     * 后台管理级用户账号
      */
     private String username;
+
+    /**
+     * 后台管理级用户真实姓名
+     */
+    private String realName;
 
     /**
      * 登录时间
@@ -44,6 +63,7 @@ public class LoginUser implements Serializable
      * 登录IP地址
      */
     private String ipaddr;
+
     /**
      * 登录地点
      */
@@ -70,18 +90,18 @@ public class LoginUser implements Serializable
     private Set<String> roles;
 
     /**
-     * 用户信息
+     * 后台管理级用户基本信息
      */
     private SysUser sysUser;
 
     /**
-     * 租户租赁截止日期--dhr
+     * 运营商(租户)租赁截止日期--dhr
      */
-    private Date tenantEndDate;
+    private Date tenantEndTime;
 
     /**
-     * 租户状态
+     * 运营商(租户)状态
      */
-    private Integer tenantStatus;
+    private UserStatusEnum status;
 
 }

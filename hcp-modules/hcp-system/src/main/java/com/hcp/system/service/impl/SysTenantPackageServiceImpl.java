@@ -122,17 +122,17 @@ public class SysTenantPackageServiceImpl implements ISysTenantPackageService
             tenants.stream().forEach(tenant->{
                 //先删除被去掉的菜单
                 if (excludeUser){
-                    sysRoleMenuMapper.deleteRoleMenuByTenantIdAndPackage(tenant.getId(),StringUtils.StringToLong(packageIsChange.get("deleteArr")));
+                    sysRoleMenuMapper.deleteRoleMenuByMerchantIdAndPackage(tenant.getId(),StringUtils.StringToLong(packageIsChange.get("deleteArr")));
                 }
                 //只给租户管理员添加新增的菜单
                 if (addUserMenu){
                     //查询当前租户的管理员角色id
-                    SysRole role = sysRoleMapper.selectRoleByTenant(tenant.getId());
+                    SysRole role = sysRoleMapper.selectRoleByMerchantId(tenant.getId());
                     List<SysRoleMenu> roleMenuList = Arrays.asList(packageIsChange.get("addArr")).stream().map(menuid -> {
                         SysRoleMenu entity = new SysRoleMenu();
                         entity.setRoleId(role.getRoleId());
                         entity.setMenuId(Convert.toLong(menuid));
-                        entity.setTenantId(tenant.getId());
+                        entity.setMerchantId(tenant.getId());
                         return entity;
                     }).collect(Collectors.toList());
                     sysRoleMenuMapper.batchRoleMenuByPackage(roleMenuList);
@@ -146,7 +146,7 @@ public class SysTenantPackageServiceImpl implements ISysTenantPackageService
                     for (String key : keys)
                     {
                         LoginUser onlineUser = redisService.getCacheObject(key);
-                        if(onlineUser.getSysUser().getTenantId() != null && onlineUser.getSysUser().getTenantId().equals(tenant.getId()))
+                        if(onlineUser.getSysUser().getMerchantId() != null && onlineUser.getSysUser().getMerchantId().equals(tenant.getId()))
                         {
                             redisService.deleteObject(key);
                         }

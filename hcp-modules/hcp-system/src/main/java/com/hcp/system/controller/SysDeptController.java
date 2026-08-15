@@ -26,7 +26,7 @@ import com.hcp.system.service.ISysDeptService;
 /**
  * 部门信息
  *
- * @author vctgo
+ * @author JHan
  */
 @RestController
 @RequestMapping("/dept")

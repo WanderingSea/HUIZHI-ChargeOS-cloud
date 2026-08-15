@@ -1,7 +1,7 @@
 package com.hcp.system.api.factory;
 
 import com.hcp.system.api.RemoteLogService;
-import com.hcp.system.api.domain.SysLogininfor;
+import com.hcp.system.api.domain.SysLoginInfo;
 import com.hcp.system.api.domain.SysOperLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,7 @@ import com.hcp.common.core.domain.R;
 /**
  * 日志服务降级处理
  *
- * @author vctgo
+ * @author JHan
  */
 @Component
 public class RemoteLogFallbackFactory implements FallbackFactory<RemoteLogService>
@@ -32,7 +32,7 @@ public class RemoteLogFallbackFactory implements FallbackFactory<RemoteLogServic
             }
 
             @Override
-            public R<Boolean> saveLogininfor(SysLogininfor sysLogininfor, String source)
+            public R<Boolean> saveLoginInfo(SysLoginInfo sysLoginInfo, String source)
             {
                 return R.fail("保存登录日志失败:" + throwable.getMessage());
             }

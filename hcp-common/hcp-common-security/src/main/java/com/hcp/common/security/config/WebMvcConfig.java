@@ -7,19 +7,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * 拦截器配置
  *
- * @author vctgo
+ * @author JHan
  */
 public class WebMvcConfig implements WebMvcConfigurer
 {
-    /** 不需要拦截地址 */
+    // 不需要拦截地址
     public static final String[] excludeUrls = { "/login", "/logout", "/refresh", "/simulator/**" };
 
     @Override
     public void addInterceptors(InterceptorRegistry registry)
     {
         registry.addInterceptor(getHeaderInterceptor())
-                .addPathPatterns("/**")
-                .excludePathPatterns(excludeUrls)
+                .addPathPatterns("/**")    // 拦截所有请求
+                .excludePathPatterns(excludeUrls)  // 排除白名单
                 .order(-10);
     }
 

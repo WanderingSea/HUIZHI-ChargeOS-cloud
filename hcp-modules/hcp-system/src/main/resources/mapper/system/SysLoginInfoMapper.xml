@@ -2,24 +2,25 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.hcp.system.mapper.SysLogininforMapper">
+<mapper namespace="com.hcp.system.mapper.SysLoginInfoMapper">
 
-	<resultMap type="com.hcp.system.api.domain.SysLogininfor" id="SysLogininforResult">
+	<resultMap type="com.hcp.system.api.domain.SysLoginInfo" id="SysLoginInfoResult">
 		<id     property="infoId"        column="info_id"           />
-		<result property="userName"      column="user_name"         />
+		<result property="phone"      column="phone"         />
 		<result property="status"        column="status"            />
 		<result property="ipaddr"        column="ipaddr"            />
 		<result property="msg"           column="msg"               />
 		<result property="accessTime"    column="access_time"       />
+		<result property="merchantId"    column="merchant_id"       />
 	</resultMap>
 
-	<insert id="insertLogininfor" >
-		insert into sys_logininfor (user_name, status, ipaddr, msg, access_time,tenant_id)
-		values (#{userName}, #{status}, #{ipaddr}, #{msg}, sysdate(),#{tenantId})
+	<insert id="insertLoginInfo" parameterType="com.hcp.system.api.domain.SysLoginInfo">
+		INSERT INTO sys_login_info (phone, status, ipaddr, msg, access_time, merchant_id)
+		values (#{phone}, #{status}, #{ipaddr}, #{msg}, sysdate(), #{merchantId})
 	</insert>
 
-	<select id="selectLogininforList"  resultMap="SysLogininforResult">
-		select info_id, user_name, ipaddr, status, msg, access_time from sys_logininfor
+	<select id="selectLoginInfoList"  resultMap="SysLoginInfoResult">
+		select info_id, phone, ipaddr, status, msg, access_time,merchant_id from sys_login_info
 		<where>
 			<if test="query.ipaddr != null and query.ipaddr != ''">
 				AND ipaddr like concat('%', #{query.ipaddr}, '%')
@@ -30,6 +31,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="query.userName != null and query.userName != ''">
 				AND user_name like concat('%', #{query.userName}, '%')
 			</if>
+			<if test="query.phone != null and query.phone != ''">
+				AND phone like concat('%', #{query.phone}, '%')
+			</if>
 			<if test="query.params.beginTime != null and query.params.beginTime != ''">
 				AND access_time &gt;= #{query.params.beginTime}
 			</if>
@@ -39,8 +43,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</where>
 		order by info_id desc
 	</select>
-    <select id="countLogininfo" resultType="java.lang.Object">
-		select count(info_id) from sys_logininfor where status =0 and msg='登录成功'
+    <select id="countLoginInfo" resultType="java.lang.Object">
+		select count(info_id) from sys_login_info where status =0 and msg='登录成功'
 	</select>
 	<select id="countRegister" resultType="java.lang.Object">
 		select count(user_id) from sys_user
@@ -49,15 +53,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		select count(id) from sys_tenant;
 	</select>
 
-    <delete id="deleteLogininforByIds" parameterType="Long">
- 		delete from sys_logininfor where info_id in
+    <delete id="deleteLoginInfoByIds" parameterType="Long">
+ 		delete from sys_login_info where info_id in
  		<foreach collection="array" item="infoId" open="(" separator="," close=")">
  			#{infoId}
         </foreach>
  	</delete>
 
-    <update id="cleanLogininfor">
-        truncate table sys_logininfor
+    <update id="cleanLoginInfo">
+        truncate table sys_login_info
     </update>
 
 </mapper>

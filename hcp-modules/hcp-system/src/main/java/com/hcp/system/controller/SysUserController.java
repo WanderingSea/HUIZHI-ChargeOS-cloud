@@ -7,10 +7,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.hutool.system.UserInfo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.hcp.common.core.enums.UserTypeEnum;
 import com.hcp.system.domain.SysMenu;
 import com.hcp.system.domain.SysTenant;
+import com.hcp.system.domain.vo.UserInfoVO;
+import com.hcp.system.domain.vo.UserListVO;
 import com.hcp.system.service.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -41,32 +47,21 @@ import com.hcp.system.api.model.LoginUser;
 /**
  * 用户信息
  *
- * @author vctgo
+ * @author JHan
  */
 @RestController
+@RequiredArgsConstructor
+@Tag(name = "用户管理", description = "用户管理接口")
 @RequestMapping("/user")
-public class SysUserController extends BaseController
-{
-    @Autowired
-    private ISysUserService userService;
+public class SysUserController extends BaseController {
 
-    @Autowired
-    private ISysRoleService roleService;
-
-    @Autowired
-    private ISysDeptService deptService;
-
-    @Autowired
-    private ISysPostService postService;
-
-    @Autowired
-    private ISysPermissionService permissionService;
-
-    @Autowired
-    private ISysConfigService configService;
-
-    @Autowired
-    private ISysTenantService sysTenantService;
+    private final ISysUserService userService;
+    private final ISysRoleService roleService;
+    private final ISysDeptService deptService;
+    private final ISysPostService postService;
+    private final ISysPermissionService permissionService;
+    private final ISysConfigService configService;
+    private final ISysTenantService sysTenantService;
 
     /**
      * 获取用户列表
@@ -112,10 +107,10 @@ public class SysUserController extends BaseController
      * 获取当前用户信息
      */
     @InnerAuth
-    @GetMapping("/info/{username}")
-    public R<LoginUser> info(@PathVariable("username") String username)
+    @GetMapping("/info/{phone}")
+    public R<LoginUser> info(@PathVariable("phone") String phone)
     {
-        SysUser sysUser = userService.selectUserByUserName(username);
+        SysUser sysUser = userService.selectUserByPhone(phone);
         if (StringUtils.isNull(sysUser))
         {
             return R.fail("用户名或密码错误");
@@ -125,23 +120,26 @@ public class SysUserController extends BaseController
         // 权限集合
         Set<String> permissions = permissionService.getMenuPermission(sysUser);
         // 查询租户信息
-        SysTenant tenant = sysTenantService.selectSysTenantById(sysUser.getTenantId());
+        SysTenant tenant = sysTenantService.selectSysTenantById(sysUser.getMerchantId());
         LoginUser sysUserVo = new LoginUser();
+        sysUserVo.setUserType(sysUser.getUserType().getValue());
+        sysUserVo.setRealName(sysUser.getRealName());
         sysUserVo.setSysUser(sysUser);
         sysUserVo.setRoles(roles);
         sysUserVo.setPermissions(permissions);
         if(tenant != null)
         {
-            sysUserVo.setTenantEndDate(tenant.getTenantTime());
-            sysUserVo.setTenantStatus(tenant.getStatus());
+            sysUserVo.setTenantEndTime(tenant.getTenantEndTime());
+            sysUserVo.setStatus(tenant.getStatus());
         }
         return R.ok(sysUserVo);
     }
 
     /**
-     * 注册用户信息
+     * 注册用户信息（暂时不开启）
      */
     @InnerAuth
+    @Tag(name = "", description = "暂时禁用接口")
     @PostMapping("/register")
     public R<Boolean> register(@RequestBody SysUser sysUser)
     {
@@ -158,26 +156,57 @@ public class SysUserController extends BaseController
     }
 
     /**
-     * 获取用户信息
+     * 网络 获取登录用户信息
      *
      * @return 用户信息
      */
     @GetMapping("getInfo")
-    public AjaxResult getInfo()
-    {
+    public AjaxResult getInfo() {
         //调整下查询顺序 将租户id塞入当前查询线程 --或者直接让权限过滤忽略租户查询 毕竟账号id唯一 目前选择直接忽略查询 后续此处修改
         SysUser user = userService.selectUserById(SecurityUtils.getUserId());
+        // 前台返回用户信息
+        UserInfoVO userInfoVO = new UserInfoVO();
+        // 判断用户身份类型 返回运营商相关的信息
+        if (user.getUserType() == UserTypeEnum.SYS_SUPER || user.getUserType() == UserTypeEnum.PLAT_ADMIN){
+            userInfoVO.setAccountId(user.getUserId().toString())
+                      .setAccountNo(null)
+                      .setAccountAttribute(null)
+                      .setBusinessType(null)
+                      .setUserAttribute(user.getUserType().getValue())
+                      .setNickName(user.getNickName())
+                      .setOperatorId(null)
+                      .setOperatorName(null)
+                      .setIsMainAccount(null)
+                      .setIsBDAccount(null)
+                      .setSecurityCode(user.getPhone())
+                      .setAvatar(user.getAvatar());
+        } else if (user.getUserType() == UserTypeEnum.MCHT_OP || user.getUserType() == UserTypeEnum.MCHT_STAFF){
+            // 根据 merchantId 查询运营商(租户)信息
+            SysTenant tenant = sysTenantService.selectSysTenantById(user.getMerchantId());
+            userInfoVO.setAccountId(user.getUserId().toString())
+                    .setAccountNo(tenant.getMerchantNo())
+                    .setAccountAttribute(tenant.getSubjectType().getValue())
+                    .setBusinessType(tenant.getMerchantType().getValue())
+                    .setUserAttribute(user.getUserType().getValue())
+                    .setNickName(user.getNickName())
+                    .setOperatorId(user.getCreateById().toString())
+                    .setOperatorName(tenant.getMerchantName())
+                    .setIsMainAccount(user.getIsPrimary())
+                    .setIsBDAccount(user.getIsSubAccount())
+                    .setSecurityCode(user.getPhone())
+                    .setAvatar(user.getAvatar());
+        }
+
         // 角色集合
         Set<String> roles = permissionService.getRolePermission(user);
         // 权限集合
         Set<String> permissions = permissionService.getMenuPermission(user);
-        // 查询租户信息
-        SysTenant tenant = sysTenantService.selectSysTenantById(user.getTenantId());
+
         AjaxResult ajax = AjaxResult.success();
-        ajax.put("user",user);
+        ajax.put("body",userInfoVO);
         ajax.put("roles", roles);
         ajax.put("permissions", permissions);
-        ajax.put("tenantName", tenant == null ? "" : tenant.getTenantName());//系统名称同步租户名称
+
         return ajax;
     }
 
@@ -185,13 +214,14 @@ public class SysUserController extends BaseController
      * 根据用户编号获取详细信息
      */
     @RequiresPermissions("system:user:query")
-    @GetMapping(value = { "/", "/{userId}" })
+    @GetMapping(value = { "/", "/{userId:\\d+}" })
     public AjaxResult getInfo(@PathVariable(value = "userId", required = false) Long userId)
     {
+        // 获取用户信息 TODO
         userService.checkUserDataScope(userId);
         AjaxResult ajax = AjaxResult.success();
         List<SysRole> roles = roleService.selectRoleAll();
-        ajax.put("roles", SysUser.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
+        ajax.put("roles", SysUser.isSuperAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
         ajax.put("posts", postService.selectPostAll());
         if (StringUtils.isNotNull(userId))
         {
@@ -215,7 +245,7 @@ public class SysUserController extends BaseController
         {
             return error("新增用户'" + user.getUserName() + "'失败，登录账号已存在");
         }
-        else if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(user))
+        else if (StringUtils.isNotEmpty(user.getPhone()) && !userService.checkUserPhoneUnique(user))
         {
             return error("新增用户'" + user.getUserName() + "'失败，手机号码已存在");
         }
@@ -242,7 +272,7 @@ public class SysUserController extends BaseController
         {
             return error("修改用户'" + user.getUserName() + "'失败，登录账号已存在");
         }
-        else if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(user))
+        else if (StringUtils.isNotEmpty(user.getPhone()) && !userService.checkUserPhoneUnique(user))
         {
             return error("修改用户'" + user.getUserName() + "'失败，手机号码已存在");
         }
@@ -299,7 +329,7 @@ public class SysUserController extends BaseController
     }
 
     /**
-     * 根据用户编号获取授权角色
+     * 根据用户编号获取授权角色  TODO
      */
     @RequiresPermissions("system:user:query")
     @GetMapping("/authRole/{userId}")
@@ -309,7 +339,7 @@ public class SysUserController extends BaseController
         SysUser user = userService.selectUserById(userId);
         List<SysRole> roles = roleService.selectRolesByUserId(userId);
         ajax.put("user", user);
-        ajax.put("roles", SysUser.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
+        ajax.put("roles", SysUser.isSuperAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
         return ajax;
     }
 
@@ -338,29 +368,52 @@ public class SysUserController extends BaseController
 
 
     /**
-     * 用于经营管理根据用户筛选
-     * 如果是管理员 返回所有用户
-     * 如果非管理员 只返回当前用户
+     * 用于经营管理根据用户筛选 <br>
+     * 如果是平台级管理员(身份为1 2) 返回所有用户 <br>
+     * 如果非管理员(除1 2之外) 只返回当前用户
      * @return
      */
     @RequiresPermissions("system:user:list")
     @GetMapping("/userList")
     public AjaxResult userList()
     {
-        Long userId = SecurityUtils.getUserId();
-        List<SysUser> userList = new ArrayList<>();
-        if (SysUser.isAdmin(userId))
-        {
+        // 获取登录用户信息
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        // 获取用户身份
+        Long userType = Long.valueOf(loginUser.getUserType());
+
+        List<UserListVO> userVOList = new ArrayList<>();
+        if (SysUser.isSuperAdmin(userType) || SysUser.isPlatformAdmin(userType)) {
             List<SysUser> sysUsers = userService.selectUserList(new SysUser());
             for(SysUser user:sysUsers){
-                if (!SysUser.isAdmin(user.getUserId())){
-                    userList.add(user);
+                // 获取用户身份
+                Long role = user.getRoleId();
+                if (!SysUser.isSuperAdmin(role) && !SysUser.isPlatformAdmin(role)) {
+                    userVOList.add(convertToVO(user));
                 }
             }
         }else {
-            userList.add(userService.selectUserById(userId));
-
+            userVOList.add(convertToVO(userService.selectUserById(SecurityUtils.getUserId())));
         }
-        return AjaxResult.success(userList);
+        return AjaxResult.success(userVOList);
     }
+
+    /**
+     * 转换为精简VO，过滤敏感字段
+     */
+    private UserListVO convertToVO(SysUser user) {
+        UserListVO vo = new UserListVO();
+                vo.setUserId(String.valueOf(user.getUserId()))
+                .setAccount(user.getUserName())
+                .setNickName(user.getNickName())
+                .setAvatar(user.getAvatar())
+                .setSecurityCode(user.getPhone())
+                .setStatus(user.getStatus().getValue())
+                .setRole(user.getUserType().getValue())
+                .setIsMain(user.getIsPrimary())
+                .setCreateBy(String.valueOf(user.getCreateById()))
+                .setAccountOwner(String.valueOf(user.getMerchantId()));
+        return vo;
+    }
+
 }

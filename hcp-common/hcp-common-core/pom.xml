@@ -103,10 +103,11 @@
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
 
-        <!-- Swagger -->
+        <!-- Swagger Annotations (v2 兼容注解, 供 @Api / @ApiModel 等使用) -->
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
+            <version>1.6.2</version>
         </dependency>
 
     </dependencies>

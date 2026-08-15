@@ -56,6 +56,14 @@ public interface SysUserMapper extends BaseMapperX<SysUser>
      @InterceptorIgnore(tenantLine = "1")
      SysUser selectUserByUserName(String userName);
 
+     /**
+      * 通过手机号查询用户
+      * @param phone 手机号
+      * @return 用户对象信息
+      */
+     @InterceptorIgnore(tenantLine = "1")
+     SysUser selectUserByPhone(String phone);
+
     /**
      * 通过用户ID查询用户
      *
@@ -129,7 +137,7 @@ public interface SysUserMapper extends BaseMapperX<SysUser>
      * @param phonenumber 手机号码
      * @return 结果
      */
-     SysUser checkPhoneUnique(String phonenumber);
+     SysUser checkUserPhoneUnique(String phone);
 
     /**
      * 校验email是否唯一
@@ -147,5 +155,5 @@ public interface SysUserMapper extends BaseMapperX<SysUser>
      * @return 结果
      */
     @InterceptorIgnore(tenantLine = "1")
-    int deleteUserByTenantId(Long[] ids);
+    int deleteUserByMerchantId(Long[] ids);
 }

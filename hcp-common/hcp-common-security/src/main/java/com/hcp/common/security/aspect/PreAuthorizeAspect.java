@@ -2,6 +2,7 @@ package com.hcp.common.security.aspect;
 
 import java.lang.reflect.Method;
 
+import com.hcp.common.security.annotation.PreAuthorizeUserRole;
 import com.hcp.common.security.annotation.RequiresLogin;
 import com.hcp.common.security.annotation.RequiresPermissions;
 import com.hcp.common.security.annotation.RequiresRoles;
@@ -16,12 +17,12 @@ import org.springframework.stereotype.Component;
 /**
  * 基于 Spring Aop 的注解鉴权
  *
- * @author kong
+ * @author JHan
  */
 @Aspect
 @Component
-public class PreAuthorizeAspect
-{
+public class PreAuthorizeAspect {
+
     /**
      * 构建
      */
@@ -34,7 +35,8 @@ public class PreAuthorizeAspect
      */
     public static final String POINTCUT_SIGN = " @annotation(com.hcp.common.security.annotation.RequiresLogin) || "
             + "@annotation(com.hcp.common.security.annotation.RequiresPermissions) || "
-            + "@annotation(com.hcp.common.security.annotation.RequiresRoles)";
+            + "@annotation(com.hcp.common.security.annotation.RequiresRoles) ||"
+            + "@annotation(com.hcp.common.security.annotation.PreAuthorizeUserRole)";
 
     /**
      * 声明AOP签名
@@ -94,5 +96,13 @@ public class PreAuthorizeAspect
         {
             AuthUtil.checkPermi(requiresPermissions);
         }
+
+        // 校验 @RequiresUserType 注解
+        PreAuthorizeUserRole preAuthorizeUserRole = method.getAnnotation(PreAuthorizeUserRole.class);
+        if (preAuthorizeUserRole != null)
+        {
+            AuthUtil.checkUserType(preAuthorizeUserRole);
+        }
+
     }
 }

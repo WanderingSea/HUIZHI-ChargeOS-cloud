@@ -6,33 +6,44 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <resultMap type="com.hcp.system.domain.SysTenant" id="SysTenantResult">
         <result property="id"    column="id"    />
-        <result property="tenantName"    column="tenant_name"    />
-        <result property="userName"    column="user_name"    />
-        <result property="userPhone"    column="user_phone"    />
-        <result property="userEmail"    column="user_email"    />
-        <result property="tenantPackage"    column="tenant_package"    />
-        <result property="tenantTime"    column="tenant_time"    />
+        <result property="merchantNo"    column="merchant_no"    />
+        <result property="merchantType"    column="merchant_type"    />
+        <result property="merchantName"    column="merchant_name"    />
+        <result property="unifiedSocialCode"    column="unified_social_code"    />
+        <result property="subjectType"    column="subject_type"    />
+        <result property="legalPersonName"    column="legal_person_name"    />
+        <result property="registerAddress"    column="register_address"    />
+        <result property="businessLicenseImg"    column="business_license_img"    />
+        <result property="tenantStartTime"    column="tenant_start_time"    />
+        <result property="tenantEndTime"    column="tenant_end_time"    />
+        <result property="provinceCode"    column="province_code"    />
+        <result property="cityCode"    column="city_code"    />
+        <result property="provinceName"    column="province_name"    />
+        <result property="cityName"    column="city_name"    />
         <result property="status"    column="status"    />
         <result property="delFlag"    column="del_flag"    />
         <result property="createBy"    column="create_by"    />
         <result property="createTime"    column="create_time"    />
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
+        <result property="agreementFileUrl" column="agreement_file_url"    />
         <result property="remark"    column="remark"    />
+        <result property="tenantPackage"    column="tenant_package"    />
     </resultMap>
 
     <sql id="selectSysTenantVo">
-        select id, tenant_name, user_name, user_phone, user_email, tenant_package, tenant_time, status, del_flag, create_by, create_time, update_by, update_time, remark from sys_tenant
+        select id, merchant_no, merchant_type, merchant_name, unified_social_code, subject_type,
+        legal_person_name, register_address, business_license_img, tenant_start_time,
+        tenant_end_time, province_code, city_code, city_name, status, del_flag,
+        create_by, create_time, update_by, update_time, remark, tenant_package,
+        agreement_file_url from sys_tenant
     </sql>
 
     <select id="selectSysTenantList"   resultMap="SysTenantResult">
         <include refid="selectSysTenantVo"/>
         <where>
-            <if test="query.tenantName != null  and query.tenantName != ''"> and tenant_name like concat('%', #{query.tenantName}, '%')</if>
-            <if test="query.userName != null  and query.userName != ''"> and user_name like concat('%', #{query.userName}, '%')</if>
-            <if test="query.userPhone != null  and query.userPhone != ''"> and user_phone = #{query.userPhone}</if>
-            <if test="query.params.beginTenantTime != null and query.params.beginTenantTime != '' and query.params.endTenantTime != null and query.params.endTenantTime != ''">
-             and tenant_time between #{query.params.beginTenantTime} and #{query.params.endTenantTime}</if>
+            <if test="query.merchantName != null  and query.merchantName != ''"> and merchant_name like concat('%', #{query.merchantName}, '%')</if>
+            and tenant_start_time between #{query.params.beginTenantTime} and #{query.params.endTenantTime}
             <if test="query.status != null  and query.status != ''"> and status = #{query.status}</if>
         </where>
     </select>

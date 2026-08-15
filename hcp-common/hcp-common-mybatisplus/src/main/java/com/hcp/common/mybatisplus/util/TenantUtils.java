@@ -5,7 +5,7 @@ import com.hcp.common.core.context.SecurityContextHolder;
 /**
  * 多租户 Util
  *
- * @author 芋道源码
+ * @author JHan
  */
 public class TenantUtils {
 
@@ -19,13 +19,13 @@ public class TenantUtils {
      * @param runnable 逻辑
      */
     public static void execute(Long tenantId, Runnable runnable) {
-        Long oldTenantId = SecurityContextHolder.getTenantId();
+        Long oldTenantId = SecurityContextHolder.getMerchantId();
         try {
-            SecurityContextHolder.setTenantId(String.valueOf(tenantId));
+            SecurityContextHolder.setMerchantId(String.valueOf(tenantId));
             // 执行逻辑
             runnable.run();
         } finally {
-            SecurityContextHolder.setTenantId(String.valueOf(oldTenantId));
+            SecurityContextHolder.setMerchantId(String.valueOf(oldTenantId));
         }
     }
 

@@ -15,6 +15,7 @@ import com.hcp.system.domain.SysUserPost;
 import com.hcp.system.domain.SysUserRole;
 import com.hcp.system.service.ISysConfigService;
 import com.hcp.system.service.ISysUserService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,33 +40,21 @@ import com.hcp.system.mapper.SysUserRoleMapper;
 /**
  * 用户 业务层处理
  *
- * @author vctgo
+ * @author JHan
  */
 @Service
+@RequiredArgsConstructor
 public class SysUserServiceImpl implements ISysUserService
 {
     private static final Logger log = LoggerFactory.getLogger(SysUserServiceImpl.class);
 
-    @Autowired
-    private SysUserMapper userMapper;
-
-    @Autowired
-    private SysRoleMapper roleMapper;
-
-    @Autowired
-    private SysPostMapper postMapper;
-
-    @Autowired
-    private SysUserRoleMapper userRoleMapper;
-
-    @Autowired
-    private SysUserPostMapper userPostMapper;
-
-    @Autowired
-    private ISysConfigService configService;
-
-    @Autowired
-    protected Validator validator;
+    private final SysUserMapper userMapper;
+    private final SysRoleMapper roleMapper;
+    private final SysPostMapper postMapper;
+    private final SysUserRoleMapper userRoleMapper;
+    private final SysUserPostMapper userPostMapper;
+    private final ISysConfigService configService;
+    protected final Validator validator;
 
     /**
      * 根据条件分页查询用户列表
@@ -135,6 +124,16 @@ public class SysUserServiceImpl implements ISysUserService
     public SysUser selectUserByUserName(String userName)
     {
         return userMapper.selectUserByUserName(userName);
+    }
+    /**
+     * 通过手机号查询用户
+     * @param phone 手机号
+     * @return 用户对象信息
+     */
+    @Override
+    public SysUser selectUserByPhone(String phone)
+    {
+        return userMapper.selectUserByPhone(phone);
     }
 
     /**
@@ -208,10 +207,10 @@ public class SysUserServiceImpl implements ISysUserService
      * @return
      */
     @Override
-    public boolean checkPhoneUnique(SysUser user)
+    public boolean checkUserPhoneUnique(SysUser user)
     {
         Long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();
-        SysUser info = userMapper.checkPhoneUnique(user.getPhonenumber());
+        SysUser info = userMapper.checkUserPhoneUnique(user.getPhone());
         if (StringUtils.isNotNull(info) && info.getUserId().longValue() != userId.longValue())
         {
             return UserConstants.NOT_UNIQUE;
@@ -245,7 +244,7 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public void checkUserAllowed(SysUser user)
     {
-        if (StringUtils.isNotNull(user.getUserId()) && user.isAdmin())
+        if (StringUtils.isNotNull(user.getUserId()) && user.isSuperAdmin())
         {
             throw new ServiceException("不允许操作超级管理员用户");
         }
@@ -259,7 +258,7 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public void checkUserDataScope(Long userId)
     {
-        if (!SysUser.isAdmin(SecurityUtils.getUserId()))
+        if (!SysUser.isSuperAdmin(SecurityUtils.getUserId()))
         {
             SysUser user = new SysUser();
             user.setUserId(userId);

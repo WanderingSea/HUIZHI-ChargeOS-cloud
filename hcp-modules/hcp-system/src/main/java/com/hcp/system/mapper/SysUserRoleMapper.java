@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Param;
 /**
  * 用户与角色关联表 数据层
  *
- * @author vctgo
+ * @author JHan
  */
  public interface SysUserRoleMapper extends BaseMapperX<SysUserRole>
 {
@@ -70,5 +70,5 @@ import org.apache.ibatis.annotations.Param;
      * @return 结果
      */
     @InterceptorIgnore(tenantLine = "1")
-    int deleteUserRoleByTenantId(Long[] ids);
+    int deleteUserRoleByMerchantId(Long[] ids);
 }

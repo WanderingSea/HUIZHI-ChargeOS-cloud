@@ -13,6 +13,11 @@ public class SwaggerProperties
     private Boolean enabled;
 
     /**
+     * 分组名称（Knife4j group，每个模块唯一）
+     **/
+    private String group = "default";
+
+    /**
      * swagger会解析的包路径
      **/
     private String basePackage = "";
@@ -80,6 +85,16 @@ public class SwaggerProperties
     public void setEnabled(Boolean enabled)
     {
         this.enabled = enabled;
+    }
+
+    public String getGroup()
+    {
+        return group;
+    }
+
+    public void setGroup(String group)
+    {
+        this.group = group;
     }
 
     public String getBasePackage()

@@ -1,5 +1,6 @@
 package com.hcp.gateway.filter;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +25,17 @@ import reactor.core.publisher.Mono;
 /**
  * 网关鉴权
  *
- * @author vctgo
+ * @author JHan
  */
 @Component
+@RequiredArgsConstructor
 public class AuthFilter implements GlobalFilter, Ordered
 {
     private static final Logger log = LoggerFactory.getLogger(AuthFilter.class);
 
     // 排除过滤的 uri 地址，nacos自行添加
-    @Autowired
-    private IgnoreWhiteProperties ignoreWhite;
-
-    @Autowired
-    private RedisService redisService;
+    private final IgnoreWhiteProperties ignoreWhite;
+    private final RedisService redisService;
 
 
     @Override
@@ -61,25 +60,25 @@ public class AuthFilter implements GlobalFilter, Ordered
         {
             return unauthorizedResponse(exchange, "令牌已过期或验证不正确！");
         }
-        String userkey = JwtUtils.getUserKey(claims);
-        boolean islogin = redisService.hasKey(getTokenKey(userkey));
-        if (!islogin)
+        String userKey = JwtUtils.getUserKey(claims);
+        boolean isLogin = redisService.hasKey(getTokenKey(userKey));
+        if (!isLogin)
         {
             return unauthorizedResponse(exchange, "登录状态已过期");
         }
-        String userid = JwtUtils.getUserId(claims);
-        String username = JwtUtils.getUserName(claims);
-        String deptid = JwtUtils.getDeptId(claims);
-        if (StringUtils.isEmpty(userid) || StringUtils.isEmpty(username))
+        String userId = JwtUtils.getUserId(claims);
+        String phone = JwtUtils.getPhone(claims);
+        String deptId = JwtUtils.getDeptId(claims);
+        if (StringUtils.isEmpty(userId) || StringUtils.isEmpty(phone))
         {
             return unauthorizedResponse(exchange, "令牌验证失败");
         }
 
         // 设置用户信息到请求
-        addHeader(mutate, SecurityConstants.USER_KEY, userkey);
-        addHeader(mutate, SecurityConstants.DETAILS_USER_ID, userid);
-        addHeader(mutate, SecurityConstants.DETAILS_USERNAME, username);
-        addHeader(mutate, SecurityConstants.DETAILS_DEPT_ID, deptid);
+        addHeader(mutate, SecurityConstants.USER_KEY, userKey);
+        addHeader(mutate, SecurityConstants.DETAILS_USER_ID, userId);
+        addHeader(mutate, SecurityConstants.PHONE, phone);
+        addHeader(mutate, SecurityConstants.DETAILS_DEPT_ID, deptId);
         // 内部请求来源参数清除
         removeHeader(mutate, SecurityConstants.FROM_SOURCE);
         return chain.filter(exchange.mutate().request(mutate.build()).build());

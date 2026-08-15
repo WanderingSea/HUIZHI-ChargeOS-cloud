@@ -9,7 +9,7 @@ import com.hcp.system.domain.SysUserPost;
 /**
  * 用户与岗位关联表 数据层
  *
- * @author vctgo
+ * @author JHan
  */
 public interface SysUserPostMapper extends BaseMapperX<SysUserPost>
 {
@@ -53,5 +53,5 @@ public interface SysUserPostMapper extends BaseMapperX<SysUserPost>
      * @return 结果
      */
     @InterceptorIgnore(tenantLine = "1")
-    int deleteUserPostByTenantId(Long[] ids);
+    int deleteUserPostByMerchantId(Long[] ids);
 }

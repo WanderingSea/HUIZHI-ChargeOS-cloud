@@ -20,6 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="createTime" column="create_time" />
 		<result property="updateBy"   column="update_by"   />
 		<result property="updateTime" column="update_time" />
+		<result property="merchantId" column="merchant_id" />
 	</resultMap>
 
 	<sql id="selectDeptVo">
@@ -154,7 +155,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		update sys_dept set del_flag = '1' where dept_id = #{deptId}
 	</delete>
 	<delete id="deleteDeptByTenantId">
-		delete from sys_dept where tenant_id in
+		delete from sys_dept where merchant_id in
 		<foreach item="id" collection="array" open="(" separator="," close=")">
 			#{id}
 		</foreach>

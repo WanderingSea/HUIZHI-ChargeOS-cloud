@@ -1,6 +1,7 @@
 package com.hcp.system.api;
 
 import com.hcp.system.api.domain.SysUser;
+import com.hcp.system.api.domain.dto.RegisterMerchantDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +17,7 @@ import com.hcp.system.api.model.LoginUser;
 /**
  * 用户服务
  *
- * @author vctgo
+ * @author JHan
  */
 @FeignClient(contextId = "remoteUserService", value = ServiceNameConstants.SYSTEM_SERVICE, fallbackFactory = RemoteUserFallbackFactory.class)
 public interface RemoteUserService
@@ -40,4 +41,19 @@ public interface RemoteUserService
      */
     @PostMapping("/user/register")
     R<Boolean> registerUserInfo(@RequestBody SysUser sysUser, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+    /**
+     * 平台管理员注册运营商（租户 + 管理员账号）
+     *
+     * @param dto    注册信息
+     * @param source 请求来源（内部调用标识）
+     * @return 结果（data 为生成的账号）
+     */
+    @PostMapping("/tenant/register")
+    R<String> registerMerchant(
+            @RequestBody RegisterMerchantDTO dto,
+            @RequestHeader(SecurityConstants.FROM_SOURCE) String source
+    );
+
+
 }

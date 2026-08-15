@@ -1,5 +1,6 @@
 package com.hcp.common.core.utils;
 
+import java.util.Date;
 import java.util.Map;
 import com.hcp.common.core.constant.SecurityConstants;
 import com.hcp.common.core.constant.TokenConstants;
@@ -11,7 +12,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 /**
  * Jwt工具类
  *
- * @author vctgo
+ * @author JHan
  */
 public class JwtUtils
 {
@@ -25,7 +26,11 @@ public class JwtUtils
      */
     public static String createToken(Map<String, Object> claims)
     {
-        String token = Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, secret).compact();
+        String token = Jwts.builder()
+                           .setClaims(claims)
+                           .setExpiration(new Date(System.currentTimeMillis() + TokenConstants.JWT_EXPIRE_TIME))
+                           .signWith(SignatureAlgorithm.HS512, secret)
+                           .compact();
         return token;
     }
 
@@ -122,14 +127,25 @@ public class JwtUtils
     }
 
     /**
-     * 根据身份信息获取用户名
+     *
+     * @param token 令牌
+     * @return 手机号
+     */
+    public static String getPhone(String token)
+    {
+        Claims claims = parseToken(token);
+        return getValue(claims, SecurityConstants.PHONE);
+    }
+
+    /**
+     * 根据身份信息获取用户手机号
      *
      * @param claims 身份信息
      * @return 用户名
      */
-    public static String getUserName(Claims claims)
+    public static String getPhone(Claims claims)
     {
-        return getValue(claims, SecurityConstants.DETAILS_USERNAME);
+        return getValue(claims, SecurityConstants.PHONE);
     }
 
     /**

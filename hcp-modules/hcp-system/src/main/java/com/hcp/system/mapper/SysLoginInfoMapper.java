@@ -6,38 +6,38 @@ import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hcp.common.mybatisplus.mapper.BaseMapperX;
-import com.hcp.system.api.domain.SysLogininfor;
+import com.hcp.system.api.domain.SysLoginInfo;
 import org.apache.ibatis.annotations.Param;
 
 /**
  * 系统访问日志情况信息 数据层
  *
- * @author vctgo
+ * @author JHan
  */
- public interface SysLogininforMapper extends BaseMapperX<SysLogininfor>
+ public interface SysLoginInfoMapper extends BaseMapperX<SysLoginInfo>
 {
     /**
      * 新增系统登录日志
      *
-     * @param logininfor 访问日志对象
+     * @param loginInfo 访问日志对象
      */
-     int insertLogininfor(SysLogininfor logininfor);
+     int insertLoginInfo(SysLoginInfo loginInfo);
 
     /**
      * 查询系统登录日志集合-分页
      *
-     * @param logininfor 访问日志对象
+     * @param loginInfo 访问日志对象
      * @return 登录记录集合
      */
-    IPage<SysLogininfor> selectLogininforList(Page page, @Param("query") SysLogininfor logininfor);
+    IPage<SysLoginInfo> selectLoginInfoList(Page page, @Param("query") SysLoginInfo loginInfo);
 
     /**
      * 查询系统登录日志集合
      *
-     * @param logininfor 访问日志对象
+     * @param loginInfo 访问日志对象
      * @return 登录记录集合
      */
-     List<SysLogininfor> selectLogininforList( @Param("query") SysLogininfor logininfor);
+     List<SysLoginInfo> selectLoginInfoList(@Param("query") SysLoginInfo loginInfo);
 
     /**
      * 批量删除系统登录日志
@@ -45,21 +45,21 @@ import org.apache.ibatis.annotations.Param;
      * @param infoIds 需要删除的登录日志ID
      * @return 结果
      */
-     int deleteLogininforByIds(Long[] infoIds);
+     int deleteLoginInfoByIds(Long[] infoIds);
 
     /**
      * 清空系统登录日志
      *
      * @return 结果
      */
-     int cleanLogininfor();
+     int cleanLoginInfo();
 
     /**
      * 查询访问次数
      *
      * @return 结果
      */
-    Object countLogininfo();
+    Object countLoginInfo();
 
     /**
      * 查询租户数量

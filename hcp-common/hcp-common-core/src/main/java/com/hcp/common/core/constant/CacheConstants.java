@@ -3,7 +3,7 @@ package com.hcp.common.core.constant;
 /**
  * 缓存常量信息
  *
- * @author vctgo
+ * @author JHan
  */
 public class CacheConstants
 {
@@ -26,6 +26,7 @@ public class CacheConstants
      * 密码锁定时间，默认10（分钟）
      */
     public final static long PASSWORD_LOCK_TIME  = 10;
+
     /**
      * 权限缓存前缀
      */

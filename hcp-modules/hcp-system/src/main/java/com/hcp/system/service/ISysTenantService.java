@@ -2,20 +2,33 @@ package com.hcp.system.service;
 
 import java.util.List;
 
+import com.hcp.common.core.domain.R;
 import com.hcp.common.core.web.domain.AjaxResult;
+import com.hcp.system.api.domain.dto.RegisterMerchantDTO;
+import com.hcp.system.api.domain.dto.RegisterMerchantSubAccountDTO;
 import com.hcp.system.domain.SysTenant;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
- * 租户管理Service接口
+ * 运营商（租户）管理Service接口
  *
- * @author vctgo
- * @date 2022-04-11
+ * @author JHan
+ * @date 2026-08-10
  */
 public interface ISysTenantService
 {
     /**
-     * 查询租户管理
+     * 平台级管理员注册运营商接口
+     */
+    R<String> registerMerchant(RegisterMerchantDTO dto);
+
+    /**
+     * 运营商注册子账户接口（员工账号）
+     */
+    R<String> registerSubAccount(RegisterMerchantSubAccountDTO dto);
+
+    /**
+     * 查询运营商（租户）管理
      *
      * @param id 租户管理主键
      * @return 租户管理
@@ -68,4 +81,6 @@ public interface ISysTenantService
      * @return 结果
      */
     int deleteSysTenantById(Long id);
+
+
 }

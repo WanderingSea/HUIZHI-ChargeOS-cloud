@@ -2,7 +2,14 @@ package com.hcp.system.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.hcp.common.core.domain.R;
+import com.hcp.common.security.annotation.InnerAuth;
+import com.hcp.system.api.domain.dto.RegisterMerchantDTO;
+import com.hcp.system.api.domain.dto.RegisterMerchantSubAccountDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,15 +31,33 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 /**
  * 租户管理Controller
  *
- * @author vctgo
- * @date 2022-04-11
+ * @author JHan
+ * @date 2026-08-10
  */
 @RestController
 @RequestMapping("/tenant")
+@RequiredArgsConstructor
 public class SysTenantController extends BaseController
 {
-    @Autowired
-    private ISysTenantService sysTenantService;
+    private final ISysTenantService sysTenantService;
+
+    /**
+     * 平台级管理员注册运营商接口
+     */
+    @InnerAuth
+    @PostMapping("/register")
+    public R<String> register(@RequestBody @Validated RegisterMerchantDTO dto) {
+        return sysTenantService.registerMerchant(dto);
+    }
+
+    /**
+     * 运营商注册子账户接口（员工账号）
+     */
+    @InnerAuth
+    @PostMapping("/registerSubAccount")
+    public R<String> registerSubAccount(@RequestBody @Validated RegisterMerchantSubAccountDTO dto) {
+        return sysTenantService.registerSubAccount(dto);
+    }
 
     /**
      * 查询租户管理列表

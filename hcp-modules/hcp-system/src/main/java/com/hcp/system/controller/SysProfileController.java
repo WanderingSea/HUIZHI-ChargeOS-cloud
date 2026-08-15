@@ -1,6 +1,8 @@
 package com.hcp.system.controller;
 
 import java.util.Arrays;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,20 +31,16 @@ import com.hcp.common.core.utils.file.MimeTypeUtils;
 /**
  * 个人信息 业务处理
  *
- * @author vctgo
+ * @author JHan
  */
 @RestController
 @RequestMapping("/user/profile")
+@RequiredArgsConstructor
 public class SysProfileController extends BaseController
 {
-    @Autowired
-    private ISysUserService userService;
-
-    @Autowired
-    private TokenService tokenService;
-
-    @Autowired
-    private RemoteFileService remoteFileService;
+    private final ISysUserService userService;
+    private final TokenService tokenService;
+    private final RemoteFileService remoteFileService;
 
     /**
      * 个人信息
@@ -69,9 +67,9 @@ public class SysProfileController extends BaseController
         SysUser currentUser = loginUser.getSysUser();
         currentUser.setNickName(user.getNickName());
         currentUser.setEmail(user.getEmail());
-        currentUser.setPhonenumber(user.getPhonenumber());
+        currentUser.setPhone(user.getPhone());
         currentUser.setSex(user.getSex());
-        if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(currentUser))
+        if (StringUtils.isNotEmpty(user.getPhone()) && !userService.checkUserPhoneUnique(currentUser))
         {
             return error("修改用户'" + loginUser.getUsername() + "'失败，手机号码已存在");
         }
@@ -84,7 +82,7 @@ public class SysProfileController extends BaseController
         {
             // 更新缓存用户信息
             loginUser.getSysUser().setNickName(user.getNickName());
-            loginUser.getSysUser().setPhonenumber(user.getPhonenumber());
+            loginUser.getSysUser().setPhone(user.getPhone());
             loginUser.getSysUser().setEmail(user.getEmail());
             loginUser.getSysUser().setSex(user.getSex());
             tokenService.setLoginUser(loginUser);

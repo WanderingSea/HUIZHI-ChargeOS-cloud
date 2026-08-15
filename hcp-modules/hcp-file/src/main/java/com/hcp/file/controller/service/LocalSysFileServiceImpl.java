@@ -62,7 +62,7 @@ public class LocalSysFileServiceImpl implements ISysFileService
     @Override
     public String uploadFile(MultipartFile file) throws Exception
     {
-        Long tenantId = SecurityContextHolder.getTenantId();
+        Long tenantId = SecurityContextHolder.getMerchantId();
         log.info("租户ID：{}", tenantId);
         SysOssConfig ossConfig = ossConfigService.selectDefaultOssConfig(tenantId);
         if (ObjectUtil.isNull(ossConfig)){

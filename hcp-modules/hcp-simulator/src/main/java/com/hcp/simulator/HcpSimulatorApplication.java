@@ -2,6 +2,7 @@ package com.hcp.simulator;
 
 import com.hcp.common.security.annotation.EnableCustomConfig;
 import com.hcp.common.security.annotation.EnableHcpFeignClients;
+import com.hcp.common.swagger.annotation.EnableCustomSwagger2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @Slf4j
 @EnableCustomConfig
+@EnableCustomSwagger2
 @EnableHcpFeignClients
 @SpringBootApplication
 public class HcpSimulatorApplication

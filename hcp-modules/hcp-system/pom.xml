@@ -41,12 +41,7 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- Swagger UI -->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${swagger.fox.version}</version>
-        </dependency>
+        <!-- Knife4j API文档由 hcp-common-swagger 统一提供 -->
 
         <!-- Mysql Connector -->
         <dependency>

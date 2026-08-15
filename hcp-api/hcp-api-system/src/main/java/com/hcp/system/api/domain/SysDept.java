@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.hcp.common.core.web.domain.BaseEntity;
 import com.hcp.common.core.web.domain.TenantEntity;
 import lombok.Data;
 
@@ -20,7 +21,7 @@ import lombok.Data;
  */
 @Data
 @TableName("sys_dept")
-public class SysDept extends TenantEntity
+public class SysDept extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
@@ -68,5 +69,10 @@ public class SysDept extends TenantEntity
     @TableField(exist = false)
     /** 子部门 */
     private List<SysDept> children = new ArrayList<SysDept>();
+
+    /**
+     * 运营商(租户)id
+     */
+    private Long merchantId;
 
 }

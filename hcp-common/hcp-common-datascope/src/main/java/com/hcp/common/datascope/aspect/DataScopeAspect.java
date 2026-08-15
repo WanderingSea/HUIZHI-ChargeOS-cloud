@@ -20,7 +20,7 @@ import com.hcp.system.api.model.LoginUser;
 /**
  * 数据过滤处理
  *
- * @author vctgo
+ * @author JHan
  */
 @Aspect
 @Component
@@ -71,7 +71,7 @@ public class DataScopeAspect
         {
             SysUser currentUser = loginUser.getSysUser();
             // 如果是超级管理员，则不过滤数据
-            if (StringUtils.isNotNull(currentUser) && !currentUser.isAdmin())
+            if (StringUtils.isNotNull(currentUser) && !currentUser.isSuperAdmin())
             {
                 String permission = StringUtils.defaultIfEmpty(controllerDataScope.permission(), SecurityContextHolder.getPermission());
                 dataScopeFilter(joinPoint, currentUser, controllerDataScope.deptAlias(),

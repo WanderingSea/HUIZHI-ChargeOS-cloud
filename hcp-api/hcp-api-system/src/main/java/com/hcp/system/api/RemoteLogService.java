@@ -1,6 +1,6 @@
 package com.hcp.system.api;
 
-import com.hcp.system.api.domain.SysLogininfor;
+import com.hcp.system.api.domain.SysLoginInfo;
 import com.hcp.system.api.domain.SysOperLog;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +14,7 @@ import com.hcp.system.api.factory.RemoteLogFallbackFactory;
 /**
  * 日志服务
  *
- * @author vctgo
+ * @author JHan
  */
 @FeignClient(contextId = "remoteLogService", value = ServiceNameConstants.SYSTEM_SERVICE, fallbackFactory = RemoteLogFallbackFactory.class)
 public interface RemoteLogService
@@ -36,6 +36,6 @@ public interface RemoteLogService
      * @param source 请求来源
      * @return 结果
      */
-    @PostMapping("/logininfor")
-    public R<Boolean> saveLogininfor(@RequestBody SysLogininfor sysLogininfor, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+    @PostMapping("/login-info")
+    public R<Boolean> saveLoginInfo(@RequestBody SysLoginInfo sysLoginInfo, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }
