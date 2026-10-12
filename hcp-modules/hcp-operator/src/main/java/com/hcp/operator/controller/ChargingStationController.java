@@ -22,11 +22,11 @@ import com.hcp.common.core.utils.poi.ExcelUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
- * 站点Controller
+ * 充电站管理 Controller
  *
- * @author hcp
- * @date 2024-08-06
- */
+ * @author JHan
+ * @Date 2026-08-25
+ * */
 @RestController
 @RequestMapping("/station")
 public class ChargingStationController extends BaseController

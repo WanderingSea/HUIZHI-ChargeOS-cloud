@@ -20,10 +20,10 @@ import com.hcp.common.core.utils.poi.ExcelUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
- * 充电桩端口Controller
+ * 充电桩枪(端口)管理 Controller
  *
- * @author hcp
- * @date 2024-08-06
+ * @author JHan
+ * @Date 2026-08-25
  */
 @RestController
 @RequestMapping("/port")

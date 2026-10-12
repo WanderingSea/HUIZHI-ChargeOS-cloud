@@ -29,6 +29,12 @@ import java.math.BigDecimal;
 import java.util.List;
 
 
+/**
+ * 设备充电管理 Controller
+ *
+ * @author JHan
+ * @Date 2026-08-25
+ */
 @RestController
 @RequestMapping("/charge")
 @Slf4j

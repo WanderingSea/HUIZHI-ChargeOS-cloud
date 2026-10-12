@@ -21,6 +21,10 @@ public class Knife4jSwaggerConfigHandler {
     @Resource
     private GatewayProperties gatewayProperties;
 
+    /**
+     * 这个接口遍历 Gateway 路由表（GatewayProperties），收集所有微服务的 OpenAPI 文档地址
+     * 返回一个 JSON 结构，告诉 Knife4j 前端有哪些微服务的 Swagger 文档可以聚合展示
+     */
     @GetMapping("/v3/api-docs/custom-swagger-config")
     public Mono<Map<String, Object>> swaggerConfig() {
         Map<String, Object> result = new LinkedHashMap<>();
