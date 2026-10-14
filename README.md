@@ -3,9 +3,6 @@
 [🔥 Github的代码优先于Gitee   https://github.com/roinli/huige-ChargeOS-cloud](https://github.com/roinli/huige-ChargeOS-cloud)
 
 
-
-## 开源版本一定不会很完美，不过会一直持续更新，如果遇到任何问题请提issue或者加群沟通解决，谢谢。
-
 ## 社区版
 
 - 微信交流群：**jinglidream**  
@@ -16,8 +13,7 @@
 
 - 资源2：两份专业方案PPT
   - SaaS汽车充电桩平台软硬件解决方案
-  - SaaS二轮单车充电桩平台软硬件解决方案  
-    同样进群后，群文件自取。
+  - SaaS二轮单车充电桩平台软硬件解决方案
 
 当前版本：3.0.8
    
