@@ -10,6 +10,7 @@ import com.hcp.common.core.annotation.Excel.ColumnType;
 import com.hcp.common.core.web.domain.BaseEntity;
 import com.hcp.common.core.web.domain.TenantEntity;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * 系统访问记录表 sys_login_info

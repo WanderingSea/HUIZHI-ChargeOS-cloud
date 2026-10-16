@@ -24,7 +24,7 @@ public class AsyncLogService
      */
     @Async
     public void saveSysLog(SysOperLog sysOperLog) throws Exception {
-        sysOperLog.setTenantId(SecurityUtils.getMerchantId());
+        sysOperLog.setMerchantId(SecurityUtils.getMerchantId());
         remoteLogService.saveLog(sysOperLog, SecurityConstants.INNER);
     }
 }

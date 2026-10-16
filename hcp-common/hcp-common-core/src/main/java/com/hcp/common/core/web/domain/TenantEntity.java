@@ -6,13 +6,13 @@ import lombok.Data;
 /**
  * Entity基类
  *
- * @author vctgo
+ * @author JHan
  */
 @Data
 public class TenantEntity extends BaseEntity
 {
 
-    /** 租户ID */
-    private Long tenantId;
+    /** 租户/运营商ID */
+    private Long merchantId;
 
 }

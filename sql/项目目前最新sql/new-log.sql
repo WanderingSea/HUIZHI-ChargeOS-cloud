@@ -109,7 +109,7 @@ CREATE TABLE `log_alarm` (
 # 订单日志表 c_order_log
 -- 创建于: hcp-operator 模块
 -- 重构原有 c_order_log，增加结构化字段
-DROP TABLE IF EXISTS `c_order_log`;
+DROP TABLE IF EXISTS `c_order_log(弃)`;
 CREATE TABLE `log_order` (
          `id`            bigint        NOT NULL AUTO_INCREMENT    COMMENT '主键ID',
          `merchant_id`     bigint        NOT NULL                    COMMENT '租户(运营商)ID',

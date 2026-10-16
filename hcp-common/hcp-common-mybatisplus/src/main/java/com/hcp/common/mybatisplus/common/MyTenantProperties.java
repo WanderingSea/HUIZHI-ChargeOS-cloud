@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 多租户配置
+ * 多租户/运营商配置
  *
- * @author dhr
+ * @author JHan
  */
 @Getter
 @Setter
@@ -20,12 +20,12 @@ import java.util.List;
 @Component
 public class MyTenantProperties {
     /**
-     * 多租户字段名称
+     * 多租户/运营商 字段名称
      */
-    private String column = "tenant_id";
+    private String column = "merchant_id";
 
     /**
-     * 多租户需要过滤的数据表(包含系统表)
+     * 多租户/运营商需要过滤的数据表(包含系统表)
      */
     private List<String> ignoreTables = new ArrayList<>();
 
