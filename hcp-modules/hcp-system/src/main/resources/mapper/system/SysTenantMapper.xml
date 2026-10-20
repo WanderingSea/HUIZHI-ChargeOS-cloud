@@ -28,14 +28,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
         <result property="agreementFileUrl" column="agreement_file_url"    />
         <result property="remark"    column="remark"    />
-        <result property="tenantPackage"    column="tenant_package"    />
     </resultMap>
 
     <sql id="selectSysTenantVo">
         select id, merchant_no, merchant_type, merchant_name, unified_social_code, subject_type,
         legal_person_name, register_address, business_license_img, tenant_start_time,
         tenant_end_time, province_code, city_code, city_name, status, del_flag,
-        create_by, create_time, update_by, update_time, remark, tenant_package,
+        create_by, create_time, update_by, update_time, remark,
         agreement_file_url from sys_tenant
     </sql>
 

@@ -137,10 +137,6 @@ public class SysUser extends BaseEntity
     @Schema(description = "删除标志（0-存在/1-删除）")
     private Integer delFlag;
 
-    /** 部门ID */
-    @Schema(description = "运营商子账号归属部门ID，无则为0，平台级管理员为0")
-    private Long deptId;
-
     /** 最后登录IP */
     @Excel(name = "最后登录IP", type = Type.EXPORT)
     @Schema(description = "最后登录IP")
@@ -172,16 +168,6 @@ public class SysUser extends BaseEntity
     @Schema(description = "备注")
     private String remark;
 
-
-    /** 部门对象 */
-    @TableField(exist = false)
-    @Excels({
-        @Excel(name = "部门名称", targetAttr = "deptName", type = Type.EXPORT),
-        @Excel(name = "部门负责人", targetAttr = "leader", type = Type.EXPORT)
-    })
-    @Schema(description = "部门对象")
-    private SysDept dept;
-
     /** 角色对象 */
     @TableField(exist = false)
     private List<SysRole> roles;
@@ -189,10 +175,6 @@ public class SysUser extends BaseEntity
     /** 角色组 */
     @TableField(exist = false)
     private Long[] roleIds;
-
-    /** 岗位组 */
-    @TableField(exist = false)
-    private Long[] postIds;
 
     /** 角色身份标识ID */
     @TableField(exist = false)

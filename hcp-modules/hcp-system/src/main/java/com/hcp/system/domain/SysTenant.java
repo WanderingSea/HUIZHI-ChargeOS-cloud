@@ -109,11 +109,6 @@ public class SysTenant extends BaseEntity {
     @Schema(description = "协议文件地址")
     private String agreementFileUrl;
 
-    /** 租户套餐 */
-    @Excel(name = "租户套餐")
-    @Schema(description = "租户套餐")
-    private Long tenantPackage;
-
     /** 租户状态（0正常 1停用） */
     @Excel(name = "租户状态", readConverterExp = "0-正常/1-停用")
     @Schema(description = "租户状态（0-正常/1-停用）")

@@ -35,7 +35,7 @@ public class HeaderInterceptor implements AsyncHandlerInterceptor
         }
         logger.info("进到这里来了......{}",request.getRequestURI());
         SecurityContextHolder.setMerchantId(ServletUtils.getHeader(request, SecurityConstants.DETAILS_MERCHANT_ID));
-        SecurityContextHolder.setDeptId(ServletUtils.getHeader(request, SecurityConstants.DETAILS_DEPT_ID));
+        // SecurityContextHolder.setDeptId(ServletUtils.getHeader(request, SecurityConstants.DETAILS_DEPT_ID));
         SecurityContextHolder.setUserId(ServletUtils.getHeader(request, SecurityConstants.DETAILS_USER_ID));
         SecurityContextHolder.setUserName(ServletUtils.getHeader(request, SecurityConstants.DETAILS_USERNAME));
         SecurityContextHolder.setPhone(ServletUtils.getHeader(request, SecurityConstants.PHONE));

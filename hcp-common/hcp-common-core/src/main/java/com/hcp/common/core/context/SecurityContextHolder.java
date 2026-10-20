@@ -81,10 +81,10 @@ public class SecurityContextHolder {
         return Convert.toLong(get(SecurityConstants.DETAILS_DEPT_ID), 0L);
     }
 
-    public static void setDeptId(String deptId)
+    /*public static void setDeptId(String deptId)
     {
         set(SecurityConstants.DETAILS_DEPT_ID, deptId);
-    }
+    }*/
 
     // 获取用户手机号
     public static String getPhone()

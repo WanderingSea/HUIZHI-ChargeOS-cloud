@@ -111,22 +111,12 @@ public class DataScopeAspect
                 conditions.add(dataScope);
                 break;
             }
-            else if (DATA_SCOPE_CUSTOM.equals(dataScope))
-            {
-                sqlString.append(StringUtils.format(
-                        " OR {}.dept_id IN ( SELECT dept_id FROM sys_role_dept WHERE role_id = {} ) ", deptAlias,
-                        role.getRoleId()));
-            }
-            else if (DATA_SCOPE_DEPT.equals(dataScope))
+
+           /* else if (DATA_SCOPE_DEPT.equals(dataScope))
             {
                 sqlString.append(StringUtils.format(" OR {}.dept_id = {} ", deptAlias, user.getDeptId()));
-            }
-            else if (DATA_SCOPE_DEPT_AND_CHILD.equals(dataScope))
-            {
-                sqlString.append(StringUtils.format(
-                        " OR {}.dept_id IN ( SELECT dept_id FROM sys_dept WHERE dept_id = {} or find_in_set( {} , ancestors ) )",
-                        deptAlias, user.getDeptId(), user.getDeptId()));
-            }
+            }*/
+
             else if (DATA_SCOPE_SELF.equals(dataScope))
             {
                 if (StringUtils.isNotBlank(userAlias))
@@ -136,7 +126,7 @@ public class DataScopeAspect
                 else
                 {
                     // 数据权限为仅本人且没有userAlias别名不查询任何数据
-                    sqlString.append(StringUtils.format(" OR {}.dept_id = 0 ", deptAlias));
+                    sqlString.append(StringUtils.format(" OR 1 = 0 ", deptAlias));
                 }
             }
             conditions.add(dataScope);
@@ -145,7 +135,7 @@ public class DataScopeAspect
         // 多角色情况下，所有角色都不包含传递过来的权限字符，这个时候sqlString也会为空，所以要限制一下,不查询任何数据
         if (StringUtils.isEmpty(conditions))
         {
-            sqlString.append(StringUtils.format(" OR {}.dept_id = 0 ", deptAlias));
+            sqlString.append(StringUtils.format(" OR 1 = 0 ", deptAlias));
         }
 
         if (StringUtils.isNotBlank(sqlString.toString()))

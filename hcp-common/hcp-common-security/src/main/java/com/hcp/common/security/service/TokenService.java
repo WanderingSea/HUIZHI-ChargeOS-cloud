@@ -59,8 +59,6 @@ public class TokenService {
         String userName = loginUser.getSysUser().getUserName();
         // 操作者所属运营商id
         Long merchantId = loginUser.getSysUser().getMerchantId();
-        // 操作者所属部门id
-        Long deptId = loginUser.getSysUser().getDeptId();
         // 操作者身份
         Integer userType = loginUser.getUserType();
 
@@ -81,8 +79,6 @@ public class TokenService {
         claimsMap.put(SecurityConstants.PHONE, phone);
         //租户id
         claimsMap.put(SecurityConstants.DETAILS_MERCHANT_ID, merchantId);
-        //部门id
-        claimsMap.put(SecurityConstants.DETAILS_DEPT_ID, deptId);
         // 接口返回信息
         Map<String, Object> rspMap = new HashMap<String, Object>();
         rspMap.put("token", JwtUtils.createToken(claimsMap));

@@ -416,7 +416,7 @@ public class SysUserServiceImpl implements ISysUserService
      */
     public void insertUserPost(SysUser user)
     {
-        Long[] posts = user.getPostIds();
+        /*Long[] posts = user.getPostIds();
         if (StringUtils.isNotEmpty(posts))
         {
             // 新增用户与岗位管理
@@ -429,7 +429,7 @@ public class SysUserServiceImpl implements ISysUserService
                 list.add(up);
             }
             userPostMapper.batchUserPost(list);
-        }
+        }*/
     }
 
     /**

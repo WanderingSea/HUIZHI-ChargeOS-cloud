@@ -363,7 +363,7 @@ public class SysTenantServiceImpl implements ISysTenantService
     //目前为单套餐,跟租户绑定,解耦防止套餐变动影响多个租户
     private void createRoleMenu(SysTenant sysTenant,SysRole role)
     {
-        SysTenantPackage sysTenantPackage = sysTenantPackageMapper.selectById(sysTenant.getTenantPackage());
+        /*SysTenantPackage sysTenantPackage = sysTenantPackageMapper.selectById(sysTenant.getTenantPackage());
         List<String> subMeuns = Arrays.asList(sysTenantPackage.getMenuIds().split(","));
 
         List<SysRoleMenu> roleMenuList = subMeuns.stream().map(menuid -> {
@@ -372,7 +372,7 @@ public class SysTenantServiceImpl implements ISysTenantService
             entity.setMenuId(Convert.toLong(menuid));
             return entity;
         }).collect(Collectors.toList());
-        sysRoleMenuMapper.batchRoleMenu(roleMenuList);
+        sysRoleMenuMapper.batchRoleMenu(roleMenuList);*/
     }
 
     private Long createPost(String username) {
@@ -403,7 +403,7 @@ public class SysTenantServiceImpl implements ISysTenantService
     @Override
     public int updateSysTenant(SysTenant sysTenant)
     {
-        //判断最新的租户套餐是否改变 重新授权 租户二级管理员账号需重新分配三级账号权限
+        /*//判断最新的租户套餐是否改变 重新授权 租户二级管理员账号需重新分配三级账号权限
         SysTenant t_sysTenant = sysTenantMapper.selectById(sysTenant.getId());
         if(sysTenant.getTenantPackage() != null && !sysTenant.getTenantPackage().equals(t_sysTenant.getTenantPackage()))
         {
@@ -429,7 +429,7 @@ public class SysTenantServiceImpl implements ISysTenantService
                     }
                 }
             }
-        }
+        }*/
         return sysTenantMapper.updateById(sysTenant);
     }
 

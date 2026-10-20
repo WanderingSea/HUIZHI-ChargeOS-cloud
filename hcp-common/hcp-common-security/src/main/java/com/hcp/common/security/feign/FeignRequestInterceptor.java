@@ -69,11 +69,11 @@ public class FeignRequestInterceptor implements RequestInterceptor
                 requestTemplate.header(SecurityConstants.DETAILS_MERCHANT_ID, merchantId);
             }
 
-            String deptId = headers.get(SecurityConstants.DETAILS_DEPT_ID);
+            /*String deptId = headers.get(SecurityConstants.DETAILS_DEPT_ID);
             if (StringUtils.isNotEmpty(deptId))
             {
                 requestTemplate.header(SecurityConstants.DETAILS_DEPT_ID, deptId);
-            }
+            }*/
 
             // 配置客户端IP
             requestTemplate.header("X-Forwarded-For", IpUtils.getIpAddr());
