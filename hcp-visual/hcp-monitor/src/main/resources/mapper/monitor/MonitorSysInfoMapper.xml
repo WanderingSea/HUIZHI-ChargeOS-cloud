@@ -16,11 +16,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
-        <result property="tenantId"    column="tenant_id"    />
+        <result property="merchantId"    column="tenant_id"    />
     </resultMap>
 
     <sql id="selectMonitorSysInfoVo">
-        select id, ip_id, cpu_info, mem_info, disk_info, cpu_core_info, create_by, create_time, update_by, update_time, remark, tenant_id from monitor_sys_info
+        select id, ip_id, cpu_info, mem_info, disk_info, cpu_core_info, create_by, create_time, update_by, update_time, remark, merchant_id from monitor_sys_info
     </sql>
 
     <select id="selectMonitorSysInfoList"   resultMap="MonitorSysInfoResult">
@@ -31,7 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="query.memInfo != null  and query.memInfo != ''"> and mem_info = #{query.memInfo}</if>
             <if test="query.diskInfo != null  and query.diskInfo != ''"> and disk_info = #{query.diskInfo}</if>
             <if test="query.cpuCoreInfo != null  and query.cpuCoreInfo != ''"> and cpu_core_info = #{query.cpuCoreInfo}</if>
-            <if test="query.tenantId != null "> and tenant_id = #{query.tenantId}</if>
+            <if test="query.merchantId != null "> and merchant_id = #{query.merchantId}</if>
         </where>
     </select>
 

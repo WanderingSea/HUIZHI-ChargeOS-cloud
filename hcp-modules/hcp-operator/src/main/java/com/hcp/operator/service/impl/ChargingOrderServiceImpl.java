@@ -234,14 +234,14 @@ public class ChargingOrderServiceImpl implements IChargingOrderService
         chargingOrder.setChargeStatus(ChargeStatus.PRE_CHARGE);
         chargingOrder.setIsFee(FeeConstant.FREE_FEE);
         chargingOrder.setHour(String.valueOf(hour));
-        chargingOrder.setTenantId(chargingPort.getTenantId());
+        chargingOrder.setMerchantId(chargingPort.getMerchantId());
         chargingOrderMapper.insertOrder(chargingOrder);
         OrderLog orderLog = new OrderLog();
         orderLog.setOrderNumber(orderNumber);
         orderLog.setMainProcess(1L);
         orderLog.setBriefInfo("客户下单");
         orderLog.setLogContent("用户下单");
-        orderLog.setTenantId(chargingPort.getTenantId());
+        orderLog.setMerchantId(chargingPort.getMerchantId());
         orderLog.setCreateTime(new Date());
         orderLogMapper.insertOrderLog(orderLog);
         //启动模拟器充电
@@ -264,7 +264,7 @@ public class ChargingOrderServiceImpl implements IChargingOrderService
         orderLog.setMainProcess(1L);
         orderLog.setBriefInfo("客户结束充电");
         orderLog.setLogContent("用户手动结束充电,结算中");
-        orderLog.setTenantId(chargingPort.getTenantId());
+        orderLog.setMerchantId(chargingPort.getMerchantId());
         orderLog.setCreateTime(new Date());
         orderLogMapper.insertOrderLog(orderLog);
         R<String> stringR = simulatorService.stopCharge(pileId, port);
@@ -295,7 +295,7 @@ public class ChargingOrderServiceImpl implements IChargingOrderService
         orderLog.setMainProcess(1L);
         orderLog.setBriefInfo("完成订单");
         orderLog.setLogContent("已完成订单,消费金额:"+totalAmount);
-        orderLog.setTenantId(order.getTenantId());
+        orderLog.setMerchantId(order.getMerchantId());
         orderLog.setCreateTime(new Date());
         orderLogMapper.insertOrderLog(orderLog);
     }
@@ -312,7 +312,7 @@ public class ChargingOrderServiceImpl implements IChargingOrderService
         orderLog.setCreateTime(new Date());
         orderLog.setBriefInfo("开始充电");
         orderLog.setLogContent("远程充电启动，启动结果:"+startResult+",失败原因:"+failReason);
-        orderLog.setTenantId(order.getTenantId());
+        orderLog.setMerchantId(order.getMerchantId());
         orderLogMapper.insertOrderLog(orderLog);
     }
 
@@ -331,7 +331,7 @@ public class ChargingOrderServiceImpl implements IChargingOrderService
         orderLog.setCreateTime(new Date());
         orderLog.setBriefInfo("充电结束");
         orderLog.setLogContent("远程充电结束，关闭结果:"+stopResult+",失败原因:"+failReason);
-        orderLog.setTenantId(order.getTenantId());
+        orderLog.setMerchantId(order.getMerchantId());
         orderLogMapper.insertOrderLog(orderLog);
     }
 

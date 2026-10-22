@@ -74,7 +74,7 @@ public class ChargeController extends BaseController {
         Heartbeat heartbeat = Heartbeat.builder()
                 .pileId(pileId).chargestate("0").deviceId("").sourcemsg("")
                 .build();
-        heartbeat.setTenantId(chargingPile.getTenantId());
+        heartbeat.setMerchantId(chargingPile.getMerchantId());
         heartbeatService.updateHeartbeat(heartbeat);
         return R.ok();
     }

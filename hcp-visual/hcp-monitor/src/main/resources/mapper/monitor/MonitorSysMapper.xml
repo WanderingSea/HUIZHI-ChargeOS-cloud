@@ -18,14 +18,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
-        <result property="tenantId"    column="tenant_id"    />
+        <result property="merchantId"    column="merchant_id"    />
     </resultMap>
 
     <sql id="selectMonitorSysVo">
         select a.id, a.sys_name, a.ip, a.user_name, a.user_password, a.ip_port, a.rsa_addr,
                a.user_phone,a.user_email,a.message_type,
                a.is_online, a.create_by,
-               a.create_time, a.update_by, a.update_time, a.remark, a.tenant_id,
+               a.create_time, a.update_by, a.update_time, a.remark, a.merchant_id,
                b.cpu_info,b.mem_info,b.disk_info,b.cpu_core_info,b.disk_percent
         from monitor_sys a
         left join (select * from monitor_sys_info where id =( select max(id) from monitor_sys_info) ) b on a.id =b.ip_id

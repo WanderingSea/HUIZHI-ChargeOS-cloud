@@ -18,11 +18,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateBy"    column="update_by"    />
         <result property="updateTime"    column="update_time"    />
         <result property="remark"    column="remark"    />
-        <result property="tenantId"    column="tenant_id"    />
+        <result property="merchantId"    column="merchant_id"    /> <!-- Changed from tenantId to merchantId -->
     </resultMap>
 
     <sql id="selectMonitorCacheVo">
-        select id, cache_name, ip, database_num, user_password, ip_port, rsa_addr, is_online,user_phone,user_email,message_type, create_by, create_time, update_by, update_time, remark, tenant_id from monitor_cache
+        select id, cache_name, ip, database_num, user_password, ip_port, rsa_addr, is_online,user_phone,user_email,message_type, create_by, create_time, update_by, update_time, remark, merchant_id from monitor_cache
     </sql>
 
     <select id="selectMonitorCacheList"   resultMap="MonitorCacheResult">

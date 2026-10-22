@@ -478,6 +478,11 @@ public class SysMenuServiceImpl implements ISysMenuService
         for (Iterator<SysMenu> iterator = list.iterator(); iterator.hasNext();)
         {
             SysMenu t = (SysMenu) iterator.next();
+            // 过滤不可见菜单
+            if ("1".equals(t.getVisible()))
+            {
+                continue;
+            }
             // 一、根据传入的某个父节点ID,遍历该父节点的所有子节点
             if (t.getParentId() == parentId)
             {

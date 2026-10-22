@@ -135,8 +135,8 @@ CREATE TABLE `sys_tenant_settle_account` (
        KEY `idx_channel` (`channel_code`,`is_default`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='运营商清分/收款账户表';
 
-# 新增 用用户 - 运营商共享授权表:平台可以把普通用户共享给指定的某个运营商,主要是用于给特定用户在这个运营商下的不同优惠
-CREATE TABLE `user_merchant_share` (
+# 新增 用户 - 运营商共享授权表:平台可以把普通用户共享给指定的某个运营商,主要是用于给特定用户在这个运营商下的不同优惠
+CREATE TABLE `c_mp_user_merchant_share` (
                                        `id` bigint NOT NULL AUTO_INCREMENT COMMENT '共享记录主键',
                                        `user_id` bigint NOT NULL COMMENT '平台车主用户ID，关联 user_member.id',
                                        `merchant_id` bigint NOT NULL COMMENT '归属运营商ID，关联 sys_merchant.id',
@@ -167,14 +167,10 @@ CREATE TABLE `user_merchant_share` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户-运营商共享分配表';
 
 
-
-
-
-# 暂时未使用
 # 新增 c_mp_user_wallet 表:平台统一电子钱包，存储可用余额、充电冻结金额，支持预充值、充电扣费、结算退款。
 CREATE TABLE `c_mp_user_wallet` (
      `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-     `user_id` bigint NOT NULL COMMENT '关联车主 user_member.id',
+     `user_id` bigint NOT NULL COMMENT '关联车主 c_mp_user.id',
      `balance` decimal(10,2) NOT NULL DEFAULT 0.00 COMMENT '可用余额（元）',
      `frozen_amount` decimal(10,2) NOT NULL DEFAULT 0.00 COMMENT '冻结金额（充电中预占用金额）',
      `total_recharge` decimal(12,2) NOT NULL DEFAULT 0.00 COMMENT '累计充值金额',
@@ -188,11 +184,10 @@ CREATE TABLE `c_mp_user_wallet` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='车主钱包表';
 
 
-# 暂时未使用
 # 新增 c_mp_user_invoice 表:管理车主开票抬头，支持个人 / 企业两种类型，充电结束后申请开票时直接选用。
 CREATE TABLE `c_mp_user_invoice` (
        `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-       `user_id` bigint NOT NULL COMMENT '关联车主 user_member.id',
+       `user_id` bigint NOT NULL COMMENT '关联车主 c_mp_user.id',
        `invoice_type` tinyint NOT NULL COMMENT '发票类型：1个人 2企业',
        `title_name` varchar(128) NOT NULL COMMENT '发票抬头名称',
        `tax_number` varchar(64) DEFAULT NULL COMMENT '纳税人识别号（企业必填）',
@@ -209,13 +204,11 @@ CREATE TABLE `c_mp_user_invoice` (
        KEY `idx_user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='发票抬头管理表';
 
-
-# 暂时未使用
 # 新增 c_mp_user_wallet_transaction 表:钱包余额变动必须全链路留痕，所有充值、消费、冻结、解冻、退款都生成流水，用于财务对账、差错排查、资损防控。
 CREATE TABLE `c_mp_user_wallet_transaction` (
         `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
-        `user_id` bigint NOT NULL COMMENT '车主id',
-        `wallet_id` bigint NOT NULL COMMENT '关联钱包id',
+        `user_id` bigint NOT NULL COMMENT '关联车主 c_mp_user.id',
+        `wallet_id` bigint NOT NULL COMMENT '关联钱包 c_mp_user_wallet.id',
         `trans_no` varchar(64) NOT NULL COMMENT '交易流水号（全局唯一）',
         `trans_type` tinyint NOT NULL COMMENT '交易类型：1充值 2消费扣费 3充电冻结 4解冻 5退款 6调账',
         `amount` decimal(10,2) NOT NULL COMMENT '交易金额，正数增加余额，负数扣减余额',
@@ -230,16 +223,113 @@ CREATE TABLE `c_mp_user_wallet_transaction` (
         UNIQUE KEY `uk_trans_no` (`trans_no`),
         KEY `idx_user_time` (`user_id`, `create_time`),
         KEY `idx_business` (`business_type`, `business_no`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='钱包交易流水表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='小程序端用户钱包交易流水表';
 
 
+# 2026/10/21 新增 运营商/代理商 短信账户表
+CREATE TABLE `sms_merchant_account` (
+           `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+           `subject_id` bigint NOT NULL COMMENT '主体ID(运营商/代理商)',
+           `balance` int NOT NULL DEFAULT 0 COMMENT '剩余可用条数',
+           `total_recharge` int NOT NULL DEFAULT 0 COMMENT '累计充值条数',
+           `total_consume` int NOT NULL DEFAULT 0 COMMENT '累计消耗条数',
+           `warn_threshold` int DEFAULT 50 COMMENT '余额预警阈值（条）',
+           `status` tinyint NOT NULL DEFAULT 1 COMMENT '账户状态：1正常 0冻结',
+           `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+           `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+           PRIMARY KEY (`id`),
+           UNIQUE KEY `uk_subject_id` (`subject_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='运营商短信账户表';
+
+# 2026/10/21 新增 运营商短信充值订单表
+CREATE TABLE `sms_merchant_recharge_order` (
+          `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+          `subject_id` bigint NOT NULL COMMENT '主体ID(运营商/代理商)',
+          `order_no` varchar(64) NOT NULL COMMENT '充值订单号',
+          `package_name` varchar(64) NOT NULL COMMENT '套餐名称',
+          `sms_count` int NOT NULL COMMENT '充值条数',
+          `pay_amount` decimal(10,2) NOT NULL COMMENT '支付金额（元）',
+          `pay_status` tinyint NOT NULL DEFAULT 0 COMMENT '支付状态：0待支付 1已支付 2已关闭',
+          `pay_time` datetime DEFAULT NULL COMMENT '支付时间',
+          `pay_channel` varchar(32) DEFAULT NULL COMMENT '支付渠道：wechat/alipay',
+          `operator_id` bigint DEFAULT NULL COMMENT '操作人（平台后台充值时记录）',
+          `remark` varchar(255) DEFAULT NULL,
+          `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (`id`),
+          UNIQUE KEY `uk_order_no` (`order_no`),
+          KEY `idx_subject_id` (`subject_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='短信充值订单表';
 
 
+# 2026/10/21 新增 短信发送记录表
+CREATE TABLE `sms_send_log` (
+           `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+           `subject_id` bigint DEFAULT 0 COMMENT '主体ID(运营商/代理商),平台公共为0',
+           `mobile` varchar(20) NOT NULL COMMENT '接收手机号',
+           `template_code` varchar(64) NOT NULL COMMENT '短信模板编码',
+           `template_content` varchar(500) NOT NULL COMMENT '发送内容',
+           `sms_type` tinyint NOT NULL COMMENT '短信类型：1验证码 2通知 3营销',
+           `send_status` tinyint NOT NULL DEFAULT 0 COMMENT '发送状态：0待发送 1成功 2失败',
+           `fee_count` int DEFAULT 0 COMMENT '扣费条数',
+           `fail_reason` varchar(255) DEFAULT NULL COMMENT '失败原因',
+           `biz_type` varchar(32) DEFAULT NULL COMMENT '业务场景：charge_start/charge_end/alert',
+           `biz_no` varchar(64) DEFAULT NULL COMMENT '关联业务单号：订单号',
+           `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+           PRIMARY KEY (`id`),
+           KEY `idx_subject_time` (`subject_id`, `create_time`),
+           KEY `idx_mobile` (`mobile`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='短信发送记录表';
 
 
+# 2026/10/21 新增 代理商 - 运营商短信分配流水表：记录代理商给下属运营商充值短信的流水，用于对账、结算差价收益。
+CREATE TABLE `sms_agent_distribute_log` (
+           `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+           `agent_id` bigint NOT NULL COMMENT '代理商ID',
+           `merchant_id` bigint NOT NULL COMMENT '目标运营商ID',
+           `sms_count` int NOT NULL COMMENT '分配条数',
+           `cost_price` decimal(10,4) NOT NULL COMMENT '代理商成本单价（元/条）',
+           `sale_price` decimal(10,4) NOT NULL COMMENT '给运营商的单价（元/条）',
+           `profit_amount` decimal(10,2) NOT NULL COMMENT '本次差价收益',
+           `operator_id` bigint NOT NULL COMMENT '操作人（代理商管理员）',
+           `remark` varchar(255) DEFAULT NULL,
+           `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+           PRIMARY KEY (`id`),
+           KEY `idx_agent_time` (`agent_id`, `create_time`),
+           KEY `idx_merchant_id` (`merchant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='代理商短信分配流水表';
 
 
+# 2026/10/21 新增 平台短信模板表
+CREATE TABLE `sms_template` (
+       `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+       `tenant_id` bigint NOT NULL DEFAULT 0 COMMENT '所属租户/代理商ID：0-平台全局通用模板；>0-运营商/代理商专属定制模板',
+       `template_code` varchar(64) NOT NULL COMMENT '系统内模板唯一编码，如 CHARGE_START_NOTICE',
+       `template_name` varchar(128) NOT NULL COMMENT '模板名称（后台展示用）',
+       `sms_type` tinyint NOT NULL COMMENT '短信类型：1验证码 2充电通知 3设备告警 4营销活动',
+       `sign_name` varchar(64) NOT NULL COMMENT '短信签名，如「云快充」',
+       `template_content` varchar(1000) NOT NULL COMMENT '模板正文，变量用${变量名}占位，例：您的充电已启动，场站${stationName}，枪号${gunNo}',
+       `variables` varchar(500) DEFAULT NULL COMMENT '支持的变量列表，逗号分隔：stationName,gunNo,orderNo',
 
+       `provider_template_id` varchar(128) DEFAULT NULL COMMENT '短信服务商审核通过的正式模板ID（阿里云/腾讯云）',
+       `provider_type` varchar(32) DEFAULT NULL COMMENT '短信服务商：aliyun / tencent',
+
+       `scene_code` varchar(64) DEFAULT NULL COMMENT '业务场景编码，对应触发场景',
+       `scene_desc` varchar(255) DEFAULT NULL COMMENT '业务场景说明',
+
+       `sort` int DEFAULT 0 COMMENT '排序',
+       `status` tinyint NOT NULL DEFAULT 1 COMMENT '状态：1启用 0禁用',
+       `audit_status` tinyint NOT NULL DEFAULT 0 COMMENT '服务商审核状态：0待审核 1审核通过 2审核驳回',
+       `audit_remark` varchar(255) DEFAULT NULL COMMENT '审核驳回原因',
+
+       `remark` varchar(500) DEFAULT NULL,
+       `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+       `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+       PRIMARY KEY (`id`),
+       UNIQUE KEY `uk_template_code` (`template_code`),
+       KEY `idx_tenant_id` (`tenant_id`),
+       KEY `idx_sms_type` (`sms_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台短信模板配置表';
 
 
 
