@@ -5,6 +5,9 @@ import org.dromara.x.file.storage.core.FileStorageProperties;
 
 import java.util.Collections;
 
+/**
+ * Minio文件存储
+ */
 public class MinioStorage extends AbstractXFileStorage {
     public MinioStorage(SysOssConfig config) {
         FileStorageProperties.MinioConfig minioConfig = new FileStorageProperties.MinioConfig();

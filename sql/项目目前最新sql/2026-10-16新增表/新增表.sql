@@ -332,7 +332,18 @@ CREATE TABLE `sms_template` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台短信模板配置表';
 
 
-
+-- 站点标签字典
+CREATE TABLE c_station_tag_dict (
+       id BIGINT PRIMARY KEY AUTO_INCREMENT,
+       tag_name VARCHAR(32), tag_type VARCHAR(32) COMMENT '配套设施/相关服务',
+       icon VARCHAR(128), sort_order INT, status TINYINT DEFAULT 1
+);
+-- 站点-标签关联
+CREATE TABLE c_station_tag_rel (
+      id BIGINT PRIMARY KEY AUTO_INCREMENT,
+      station_id BIGINT, tag_id BIGINT,
+      UNIQUE KEY uk_station_tag(station_id, tag_id)
+);
 
 
 

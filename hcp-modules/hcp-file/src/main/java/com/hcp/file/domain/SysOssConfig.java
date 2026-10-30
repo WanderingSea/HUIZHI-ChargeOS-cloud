@@ -64,6 +64,4 @@ public class SysOssConfig extends TenantEntity
     /** 删除标志 */
     private String delFlag;
 
-
-
 }

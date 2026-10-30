@@ -33,3 +33,8 @@ logs
 hcp-mini/node_modules/
 hcp-mini/unpackage/
 
+### JVM crash logs ###
+hs_err_pid*.log
+replay_pid*.log
+derby.log
+

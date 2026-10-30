@@ -5,6 +5,10 @@ import org.dromara.x.file.storage.core.FileStorageProperties;
 
 import java.util.Collections;
 
+/**
+ * 腾讯云COS存储
+ */
+
 public class TencentFileStorage extends AbstractXFileStorage {
     public TencentFileStorage(SysOssConfig config) {
         FileStorageProperties.TencentCosConfig tencentCosConfig = new FileStorageProperties.TencentCosConfig();

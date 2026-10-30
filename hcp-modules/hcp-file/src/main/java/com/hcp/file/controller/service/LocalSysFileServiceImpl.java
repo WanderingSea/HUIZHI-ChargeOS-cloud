@@ -62,9 +62,9 @@ public class LocalSysFileServiceImpl implements ISysFileService
     @Override
     public String uploadFile(MultipartFile file) throws Exception
     {
-        Long tenantId = SecurityContextHolder.getMerchantId();
-        log.info("租户ID：{}", tenantId);
-        SysOssConfig ossConfig = ossConfigService.selectDefaultOssConfig(tenantId);
+        Long merchantId = SecurityContextHolder.getMerchantId();
+        log.info("租户ID：{}", merchantId);
+        SysOssConfig ossConfig = ossConfigService.selectDefaultOssConfig(merchantId);
         if (ObjectUtil.isNull(ossConfig)){
             throw new Exception("当前租住未配置默认存储配置");
         }

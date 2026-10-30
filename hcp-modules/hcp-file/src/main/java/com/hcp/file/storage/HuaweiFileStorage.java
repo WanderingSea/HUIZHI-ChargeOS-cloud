@@ -5,6 +5,9 @@ import org.dromara.x.file.storage.core.FileStorageProperties;
 
 import java.util.Collections;
 
+/**
+* 华为云OBS文件存储
+*/
 public class HuaweiFileStorage extends AbstractXFileStorage {
     public HuaweiFileStorage(SysOssConfig config) {
         FileStorageProperties.HuaweiObsConfig huaweiObsConfig = new FileStorageProperties.HuaweiObsConfig();

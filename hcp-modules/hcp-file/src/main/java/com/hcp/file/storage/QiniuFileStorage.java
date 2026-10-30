@@ -5,6 +5,9 @@ import org.dromara.x.file.storage.core.FileStorageProperties;
 
 import java.util.Collections;
 
+/**
+ * 七牛云文件存储
+ */
 public class QiniuFileStorage extends AbstractXFileStorage {
     public QiniuFileStorage(SysOssConfig config) {
         FileStorageProperties.QiniuKodoConfig qiniuKodoConfig = new FileStorageProperties.QiniuKodoConfig();

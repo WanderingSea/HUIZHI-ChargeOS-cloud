@@ -5,6 +5,9 @@ import org.dromara.x.file.storage.core.FileStorageProperties;
 
 import java.util.Collections;
 
+/**
+ * 阿里云OSS文件存储
+ */
 public class AliFileStorage extends AbstractXFileStorage {
     public AliFileStorage(SysOssConfig config) {
         FileStorageProperties.AliyunOssConfig aliyunOssConfig = new FileStorageProperties.AliyunOssConfig();

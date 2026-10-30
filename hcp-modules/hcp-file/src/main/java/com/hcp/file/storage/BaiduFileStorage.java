@@ -5,6 +5,9 @@ import org.dromara.x.file.storage.core.FileStorageProperties;
 
 import java.util.Collections;
 
+/**
+ * 百度云BOS文件存储
+ */
 public class BaiduFileStorage extends AbstractXFileStorage {
     public BaiduFileStorage(SysOssConfig config) {
         FileStorageProperties.BaiduBosConfig baiduBosConfig = new FileStorageProperties.BaiduBosConfig();
